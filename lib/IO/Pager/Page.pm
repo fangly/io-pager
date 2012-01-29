@@ -13,8 +13,7 @@ BEGIN {
 
 # Gravy
 sub import {
-  shift;
-  my %opt = @_;
+  my ($self, %opt) = @_;
   $SIG{PIPE} = sub{ exit 0; } if $opt{hush};
 }
 
@@ -38,7 +37,7 @@ environmenta variable or one of a standard list of pagers.
 
 =head1 USAGE
 
-  BEGIN{
+  BEGIN {
     use IO::Pager::Page;
     # use I::P::P first, just in case another module sends output to STDOUT
   }
