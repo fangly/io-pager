@@ -12,16 +12,10 @@ BEGIN {
   # Find a pager to use and set the $PAGER environment variable
   my $which = eval { require File::Which };
   my @pagers;
-  if (defined $PAGER) {
-    push @pagers, split(' ', $PAGER);
-  }
-  push @pagers,
-      '/usr/local/bin/less',
-      '/usr/bin/less',
-      '/usr/bin/more',
-      'less',
-      'more';
-  PAGER: for my $pager (@pagers) {
+  push @pagers, $PAGER if defined $PAGER;
+  push @pagers, '/usr/local/bin/less', '/usr/bin/less', '/usr/bin/more';
+  push @pagers, 'less', 'more' if $which;
+  LOOP: for my $pager (@pagers) {
     # Find the full path of the pager if needed
     my @locs;
     if ( $which && (not File::Spec->file_name_is_absolute($pager)) ) {
@@ -34,7 +28,7 @@ BEGIN {
       if (-e $loc) {
         # Found a suitable pager
         $PAGER = $loc;
-        last PAGER;
+        last LOOP;
       }
     }
   }
@@ -55,7 +49,9 @@ sub open(;$$){
 }
 
 1;
+
 __END__
+
 =pod
 
 =head1 NAME
@@ -67,7 +63,7 @@ IO::Pager - Select a pager and pipe text to it if destination is a TTY
   # Select an appropriate pager, set the $PAGER environment variable
   use IO::Pager;
 
-  #Optionally pipe output to it
+  # Optionally pipe output to it
   {
     #local $STDOUT =     IO::Pager::open *STDOUT;
     local  $STDOUT = new IO::Pager       *STDOUT;
@@ -114,7 +110,7 @@ For anything else, YMMV.
 Instantiate a new IO::Pager to paginate FILEHANDLE if necessary.
 I<Assign the return value to a scoped variable>.
 
-See the appropriate subclass for implementation specific details.
+See the appropriate subclass for implementation-specific details.
 
 =over
 
