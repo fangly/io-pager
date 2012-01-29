@@ -9,55 +9,67 @@ use Tie::Handle;
 $VERSION = 0.06;
 
 sub new(;$) {
+  my ($class, $out_fh) = @_;
   no strict 'refs';
-  my $fh = $_[1] || *{select()};
+  $out_fh ||= *{select()};
   # STDOUT & STDERR are separately bound to tty
-  if( defined( my $FHn = fileno($fh) ) ){
+  if( defined( my $FHn = fileno($out_fh) ) ){
     if( $FHn == fileno(STDOUT) ){
-      return 0 unless -t $fh;
+      return 0 unless -t $out_fh;
     }
     if( $FHn == fileno(STDERR) ){
-      return 0 unless -t $fh;
+      return 0 unless -t $out_fh;
     }
   }
   # This allows us to have multiple pseudo-STDOUT
   return 0 unless -t STDOUT;
-  tie($fh, $_[0], $fh) or die "Can't tie $$fh";
+  tie *$out_fh, $class, $out_fh or die "Could not tie $$out_fh\n";
 }
 
 sub open(;$) {
-  new IO::Pager::Buffered;
+  my ($out_fh) = @_;
+  new IO::Pager::Buffered $out_fh;
 }
 
 sub TIEHANDLE {
-  bless [$_[1], '', 0], $_[0];
+  my ($class, $out_fh) = @_;
+  my $self = bless {}, $class;
+  $self->{out_fh} = $out_fh;
+  $self->{buffer} = '';
+  $self->{closed} = 0;
+  return $self;
 }
 
 sub PRINT {
-  my $ref = shift;
-  $ref->[1] .= join($,||'', @_);
+  my ($self, @args) = @_;
+  $self->{buffer} .= join($,||'', @args);
 }
 
 sub PRINTF {
-  PRINT shift, sprintf shift, @_;
+  my ($self, $format, @args) = @_;
+  PRINT $self, sprintf($format, @args);
 }
 
 sub WRITE {
-  PRINT shift, substr $_[0], $_[2]||0, $_[1];
+  my ($self, $scalar, $length, $offset) = @_;
+  PRINT $self, substr($scalar, $offset||0, $length);
 }
 
 
 *DESTROY = *CLOSE;
 sub CLOSE {
+  my ($self) = @_;
   local $^W = 0;
-  my $ref = $_[0];
-  return if $ref->[2]++;
-  untie $ref->[0];
-  my $fh;
-  CORE::open($fh, "| $PAGER") ?
-    do{ print $fh $ref->[1]; close $fh; } : 
-    do{ warn -x $PAGER ? "Can't pipe to \$PAGER ($PAGER): $!\n" :
-          "Couldn't find a pager!\n"; print $ref->[1]; }
+  return if $self->{closed}++;
+  untie *{$self->{out_fh}};
+  my $out_fh;
+  if (CORE::open($out_fh, "| $PAGER")) {
+    print $out_fh $self->{buffer};
+    close $out_fh;
+  } else {
+    warn "Could not pipe to \$PAGER ($PAGER): $!\n";
+    print $self->{buffer};
+  } 
 }
 
 1;
