@@ -8,7 +8,7 @@
 use ExtUtils::MakeMaker qw(prompt);
 use Test::More tests => 2;
 BEGIN {
-      diag qq(\nYour current \$ENV{PAGER} = "$ENV{PAGER}"\n);
+      diag qq(\nYour current \$ENV{PAGER} = ").($ENV{PAGER}||'').qq("\n);
       use_ok('IO::Pager') };
 
 #########################
@@ -16,7 +16,7 @@ BEGIN {
 # Insert your test code below, the Test::More module is use()ed here so read
 # its man page ( perldoc Test::More ) for help writing this test script.
 
-diag qq(\nYour IO::Pager \$ENV{PAGER} = "$ENV{PAGER}"\n);
+diag qq(\nYour IO::Pager \$ENV{PAGER} = ").($ENV{PAGER}||'').qq("\n);
 select(STDERR);
 my $A = prompt("\n\nIs this reasonable? [Yn]");
 ok( ($A =~ /^y(?:es)?/i || $A eq ''), 'Found a pager fine');
