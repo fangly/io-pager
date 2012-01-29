@@ -12,7 +12,7 @@ BEGIN {
   my $which = !$@;
   
   if( defined($ENV{PAGER}) ){
-#    my $pager =~ (split(/(?<!\\)\s/, $ENV{PAGER}))[0];
+    #my $pager =~ (split(/(?<!\\)\s/, $ENV{PAGER}))[0];
     my $pager = (split(' ', $ENV{PAGER}))[0];
     
     #Some platforms don't do -x so we use -e
@@ -56,14 +56,14 @@ __END__
 
 =head1 NAME
 
-IO::Pager - Select a pager, optionally pipe it output if destination is a TTY
+IO::Pager - Select a pager and pipe text to it if destination is a TTY
 
 =head1 SYNOPSIS
 
-  #Select a pager, sets $ENV{PAGER}
+  #Select a pager, set $ENV{PAGER}
   use IO::Pager;
 
-  #Optionally pipe output
+  #Optionally pipe output to it
   {
     #local $STDOUT =     IO::Pager::open *STDOUT;
     local  $STDOUT = new IO::Pager       *STDOUT;
@@ -75,14 +75,13 @@ IO::Pager - Select a pager, optionally pipe it output if destination is a TTY
 
 =head1 DESCRIPTION
 
-IO::Pager is lightweight and can be used to locate an available pager
-and set $ENV{PAGER} (see L</NOTES>) or as a factory for creating objects
-defined elsewhere such as L<IO::Pager::Buffered> and L<IO::Pager::Unbuffered>.
+IO::Pager is a lightweight module to locate an available pager and set
+$ENV{PAGER} (see L</NOTES>). It is also a factory for creating objects
+such as L<IO::Pager::Buffered> and L<IO::Pager::Unbuffered>.
 
 IO::Pager subclasses are designed to programmatically decide whether
 or not to pipe a filehandle's output to a program specified in $ENV{PAGER}.
-Subclasses are only required to support filehandle output methods and close,
-namely
+Subclasses are only required to support these filehandle methods:
 
 =over
 
@@ -176,14 +175,14 @@ See L</NOTES> for more information.
 
 =head1 NOTES
 
-The algorythm for determining which pager is to use as follows:
+The algorithm for determining which pager to use is as follows:
 
 =over
 
 =item 1. Defer to $ENV{PAGER}
 
-Use the value of $ENV{PAGER} if it exists unless File::Which is available
-and the pager in $ENV{PAGER} is determined to be unavailable.
+If $ENV{PAGER} is set, use the pagger it identifies, unless this pager
+is not available.
 
 =item 2. Usual suspects
 
@@ -191,7 +190,7 @@ Try the standard, hardcoded paths in L</FILES>.
 
 =item 3. File::Which
 
-If File::Which is available check for C<less> and L<more>.
+If File::Which is available check if C<less> or L<more> can be used.
 
 =item 4. more
 
@@ -205,13 +204,13 @@ Steps 1, 3 and 4 rely upon $ENV{PATH}.
 
 L<IO::Pager::Buffered>, L<IO::Pager::Unbuffered>, L<IO::Pager::Page>
 
-L<IO::Page>, L<Tool::Less>
+L<IO::Page>, L<Meta::Tool::Less>
 
 =head1 AUTHOR
 
 Jerrad Pierce <jpierce@cpan.org>
 
-This module is forked from IO::Page 0.02 by Monte Mitzelfelt
+This module was forked from IO::Page 0.02 by Monte Mitzelfelt
 
 =head1 LICENSE
 

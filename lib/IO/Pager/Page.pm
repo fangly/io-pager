@@ -21,7 +21,7 @@ __END__
 
 =head1 NAME
 
-IO::Pager::Page - use IO::Pager to emulate IO::Page, pipe STDOUT to a pager if STDOUT is a TTY
+IO::Pager::Page - Emulate IO::Page, pipe STDOUT to a pager if STDOUT is a TTY
 
 =head1 SYNOPSIS
 
@@ -29,7 +29,7 @@ Pipes STDOUT to a pager if STDOUT is a TTY
 
 =head1 DESCRIPTION
 
-IO::Pager is designed to programmaticly decide whether or not to point
+IO::Pager was designed to programmatically decide whether or not to point
 the STDOUT file handle into a pipe to program specified in $ENV{PAGER}
 or one of a standard list of pagers.
 
@@ -45,7 +45,7 @@ or one of a standard list of pagers.
   HEREDOC
 
 If you wish to forgo the potential for a I<Broken Pipe> foible resulting
-from the user exiting the pager prematurely load IO::Pager::Page like so:
+from the user exiting the pager prematurely, load IO::Pager::Page like so:
 
   use IO::Pager::Page hush=>1;
 

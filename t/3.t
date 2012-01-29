@@ -22,7 +22,7 @@ SKIP: {
   diag(<<EOF
 
 Here's some text. Reading is fun.  ABCDEFGHIJKLMNOPQRSTUVWXYZ
-You should not be seeing this text should from within a pager.
+You should not see this text from within a pager.
 
 EOF
 );
@@ -37,7 +37,7 @@ EOF
       my $i=0;
       $SIG{PIPE} = sub{ die };
       while(1){
-        printf BOB "%06i Exit your pager when you're satisified you've seen enough try 'Q'.\n", $i++;
+        printf BOB "%06i Exit your pager when you've seen enough: press 'Q'.\n", $i++;
         sleep 1 unless $i%400;
       }
     };

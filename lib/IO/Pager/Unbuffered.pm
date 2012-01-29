@@ -11,7 +11,7 @@ sub new(;$){
   no strict 'refs';
   my $FH = $_[1] || *{select()};
 
-  #STDOUT & STDERR are seperately bound to tty
+  #STDOUT & STDERR are separately bound to tty
   if( defined( my $FHn = fileno($FH) ) ){
     if( $FHn == fileno(STDOUT) ){
       return 0 unless -t $FH;
@@ -71,7 +71,7 @@ __END__
 
 =head1 NAME
 
-IO::Pager::Unbuffered - Pipe output to a pager if output is to a TTY
+IO::Pager::Unbuffered - Pipe output to a pager if destination is to a TTY
 
 =head1 SYNOPSIS
 
@@ -87,7 +87,7 @@ IO::Pager::Unbuffered - Pipe output to a pager if output is to a TTY
 
 =head1 DESCRIPTION
 
-IO::Pager is designed to programmaticly decide whether or not to point
+IO::Pager is designed to programmatically decide whether or not to point
 the STDOUT file handle into a pipe to program specified in $ENV{PAGER}
 or one of a standard list of pagers.
 
@@ -111,7 +111,7 @@ An alias for new.
 =head2 close( FILEHANDLE )
 
 Explicitly close the filehandle, if a pager was deemed necessary this
-will kill it. Normally you'd just wait for the user to exit the pager
+will kill it. Normally you would just wait for the user to exit the pager
 and the object to pass out of scope.
 
 I<This does not default to the current filehandle>.
@@ -139,7 +139,7 @@ L<IO::Pager>, L<IO::Pager::Buffered>, L<IO::Pager::Page>
 
 Jerrad Pierce <jpierce@cpan.org>
 
-This module is forked from IO::Page 0.02 by Monte Mitzelfelt
+This module was forked from IO::Page 0.02 by Monte Mitzelfelt
 
 Significant proddage provided by Tye McQueen.
 

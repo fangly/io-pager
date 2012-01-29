@@ -1,7 +1,7 @@
 IO::Pager version 0.06
 =====================
 
-IO::Pager - Select a pager to pipe output to if destination is a TTY
+IO::Pager - Select a pager and pipe text to it if destination is a TTY
 
 
 IO::Pager is lightweight and can be used to locate an available pager
