@@ -33,7 +33,7 @@ EOF
   {
     local $STDOUT = new IO::Pager *BOB, 'IO::Pager::Buffered';
     foreach( 1..50 ){
-      printf BOB "%06i Exit your pager when you're satisified you've seen enough try 'Q'.\n", $_;
+      printf BOB "%06i Exit your pager when you've seen enough: press 'Q'.\n", $_;
     }
     #XXX This really shouldn't be needed, but it is under Test::More
     close(BOB);
