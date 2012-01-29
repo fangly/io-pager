@@ -37,15 +37,15 @@ BEGIN {
 }
 
 sub new(;$$) {
-  shift;
-  goto &open;  
+  my ($class, $out_fh, $subclass) = @_;
+  IO::Pager::open($out_fh, $subclass);
 }
 
 sub open(;$$) {
-  my $class = scalar @_ > 1 ? pop : undef;
-  $class ||= 'IO::Pager::Unbuffered';
-  eval { require $class } or die "Could not load $class: $@\n";
-  $class->new($_[0], $class);
+  my ($out_fh, $subclass) = @_;
+  $subclass ||= 'IO::Pager::Unbuffered';
+  eval "require $subclass" or die "Could not load $subclass: $@\n";
+  $subclass->new($out_fh, $subclass);
 }
 
 1;
@@ -103,12 +103,13 @@ Supports syswrite() to the filehandle.
 
 For anything else, YMMV.
 
-=head2 new( [FILEHANDLE], [EXPR] )
+=head2 new( [FILEHANDLE], [SUBCLASS] )
 
 Instantiate a new IO::Pager to paginate FILEHANDLE if necessary.
 I<Assign the return value to a scoped variable>.
 
-See the appropriate subclass for implementation-specific details.
+The object will be of type SUBCLASS (L<IO::Pager::Unbuffered by default). See
+the appropriate subclass for details.
 
 =over
 
