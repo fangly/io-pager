@@ -34,8 +34,8 @@ sub open(;$) {
 sub TIEHANDLE {
   my ($class, $out_fh) = @_;
   my $tied_fh;
-  unless( CORE::open($tied_fh, "| $PAGER") ){
-    warn "Can't pipe to \$PAGER ($PAGER): $!\n";
+  unless (CORE::open($tied_fh, "| $PAGER")) {
+    warn "Could not pipe to \$PAGER ($PAGER): $!\n";
     return 0;
   }
   my $self = bless {}, $class;
