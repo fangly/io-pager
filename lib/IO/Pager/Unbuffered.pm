@@ -27,6 +27,7 @@ sub new(;$) {
 }
 
 sub open(;$) {
+  my ($out_fh) = @_;
   new IO::Pager::Unbuffered $out_fh;
 }
 
