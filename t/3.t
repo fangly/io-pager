@@ -37,8 +37,8 @@ EOF
       my $i=0;
       $SIG{PIPE} = sub{ die };
       while(1){
-	printf BOB "%06i Exit your pager when you're satisified you've seen enough try 'Q'.\n", $i++;
-	sleep 1 unless $i%400;
+        printf BOB "%06i Exit your pager when you're satisified you've seen enough try 'Q'.\n", $i++;
+        sleep 1 unless $i%400;
       }
     };
   }
