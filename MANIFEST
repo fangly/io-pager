@@ -1,0 +1,14 @@
+CHANGES
+Makefile.PL
+MANIFEST
+lib/IO/Pager.pm
+lib/IO/Pager/Buffered.pm
+lib/IO/Pager/Page.pm
+lib/IO/Pager/Unbuffered.pm
+README
+TODO
+t.pl
+t/1.t
+t/2.t
+t/3.t
+t/4.t

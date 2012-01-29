@@ -1,0 +1,36 @@
+Revision history for Perl extension IO::Pager.
+
+0.02  Tue Jul 15 23:11:12 2003
+
+      original version; created by h2xs 1.22 with options
+		-X -n IO::Pager
+
+0.03  Tue Jul 15 23:11:12 2003
+
+      Forked from IO::Page
+
+0.04  Wed Jul 16 18:53:58 EDT 2003
+
+      Removed a stupid debug message from IO::Pager::new
+
+      Improved $ENV{PAGER} selection algorythm
+
+      Touched up documentation
+
+      Added some tests
+
+0.05  Thu Jul 17 20:01:55 EDT 2003
+
+      Touched up documentation
+
+      Added IO::Pager::Page, a clone of IO::Page "Broken pipe" foible and all
+
+      Fixed a bug in $ENV{PAGER} selection algorythm,
+      it failed if you didn't have File::Which. It's now back to
+      being only strongly recommended as opposed to required.
+
+0.06  
+
+      Fixed a stupid leftover using =~ for assignment that some perls ignored
+
+      Fixed other nits in t.pl and documentation
