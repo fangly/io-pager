@@ -5,7 +5,7 @@ use strict;
 use vars qw( $VERSION );
 use File::Spec;
 
-$VERSION = 0.05;
+$VERSION = 0.06;
 
 BEGIN {
   eval 'use File::Which';

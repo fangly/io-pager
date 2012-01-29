@@ -1,7 +1,7 @@
 package IO::Pager::Page;
 use vars '$VERSION';
 
-$VERSION = 0.05;
+$VERSION = 0.06;
 
 #The meat
 BEGIN{

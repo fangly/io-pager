@@ -5,7 +5,7 @@ use strict;
 use vars qw( $VERSION );
 use Tie::Handle;
 
-$VERSION = 0.03;
+$VERSION = 0.06;
 
 sub new(;$){
   no strict 'refs';
