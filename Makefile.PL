@@ -8,6 +8,7 @@ WriteMakefile(
        'Test::More'     => 0,
     },
     'PREREQ_PM'         => {
+       'Env'            => 0,
        'File::Spec'     => 0,
        'Tie::Handle'    => 0,
     },

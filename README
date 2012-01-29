@@ -26,6 +26,7 @@ To install this module type the following:
 
 DEPENDENCIES
 
+Env         this is a required core module.
 Test::More  this is a required core module.
 File::Spec  this is a required core module.
 Tie::Handle this is a required core module.

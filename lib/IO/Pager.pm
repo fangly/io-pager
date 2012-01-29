@@ -3,6 +3,7 @@ package IO::Pager;
 use 5;
 use strict;
 use vars qw( $VERSION );
+use Env qw(PAGER);
 use File::Spec;
 
 $VERSION = 0.06;
@@ -11,8 +12,8 @@ BEGIN {
   # Find a pager to use and set the $PAGER environment variable
   my $which = eval { require File::Which };
   my @pagers;
-  if (defined $ENV{PAGER}) {
-    push @pagers, split(' ', $ENV{PAGER});
+  if (defined $PAGER) {
+    push @pagers, split(' ', $PAGER);
   }
   push @pagers,
       '/usr/local/bin/less',
@@ -32,13 +33,13 @@ BEGIN {
     for my $loc (@locs) {
       if (-e $loc) {
         # Found a suitable pager
-        $ENV{PAGER} = $loc;
+        $PAGER = $loc;
         last PAGER;
       }
     }
   }
   # If all else failed, default to more
-  $ENV{PAGER} ||= 'more';
+  $PAGER ||= 'more';
 }
 
 sub new(;$$){

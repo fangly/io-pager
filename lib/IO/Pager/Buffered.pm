@@ -3,6 +3,7 @@ package IO::Pager::Buffered;
 use 5;
 use strict;
 use vars qw( $VERSION );
+use Env qw(PAGER);
 use Tie::Handle;
 
 $VERSION = 0.06;
@@ -55,9 +56,10 @@ sub CLOSE{
   return if $ref->[2]++;
   untie $ref->[0];
 
-  CORE::open(PAGER, "| $ENV{PAGER}") ?
-    do{ print PAGER $ref->[1]; close PAGER; } : 
-    do{ warn -x $ENV{PAGER} ? "Can't pipe to \$ENV{PAGER}: $!\n" :
+  my $fh;
+  CORE::open($fh, "| $PAGER") ?
+    do{ print $fh $ref->[1]; close $fh; } : 
+    do{ warn -x $PAGER ? "Can't pipe to \$PAGER ($PAGER): $!\n" :
           "Couldn't find a pager!\n"; print $ref->[1]; }
 }
 

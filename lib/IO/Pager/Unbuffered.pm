@@ -3,6 +3,7 @@ package IO::Pager::Unbuffered;
 use 5;
 use strict;
 use vars qw( $VERSION );
+use Env qw(PAGER);
 use Tie::Handle;
 
 $VERSION = 0.06;
@@ -31,14 +32,14 @@ sub open(;$){
 }
 
 sub TIEHANDLE{
-  my $PAGER;
+  my $fh;
 
-  unless( CORE::open($PAGER, "| $ENV{PAGER}") ){
-    warn "Can't pipe to \$ENV{PAGER}: $!\n";
+  unless( CORE::open($fh, "| $PAGER") ){
+    warn "Can't pipe to \$PAGER ($PAGER): $!\n";
     return 0;
   }
 
-  bless [$_[1], $PAGER, 0], $_[0];
+  bless [$_[1], $fh, 0], $_[0];
 }
 
 sub PRINT{
