@@ -38,13 +38,13 @@ BEGIN {
 
 sub new(;$$) {
   shift;
-  goto &open;
+  goto &open;  
 }
 
 sub open(;$$) {
   my $class = scalar @_ > 1 ? pop : undef;
   $class ||= 'IO::Pager::Unbuffered';
-  eval "require $class";
+  eval { require $class } or die "Could not load $class: $@\n";
   $class->new($_[0], $class);
 }
 

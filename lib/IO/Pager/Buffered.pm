@@ -10,21 +10,19 @@ $VERSION = 0.06;
 
 sub new(;$) {
   no strict 'refs';
-  my $FH = $_[1] || *{select()};
-
-  #STDOUT & STDERR are separately bound to tty
-  if( defined( my $FHn = fileno($FH) ) ){
+  my $fh = $_[1] || *{select()};
+  # STDOUT & STDERR are separately bound to tty
+  if( defined( my $FHn = fileno($fh) ) ){
     if( $FHn == fileno(STDOUT) ){
-      return 0 unless -t $FH;
+      return 0 unless -t $fh;
     }
     if( $FHn == fileno(STDERR) ){
-      return 0 unless -t $FH;
+      return 0 unless -t $fh;
     }
   }
-  #This allows us to have multiple pseudo-STDOUT
+  # This allows us to have multiple pseudo-STDOUT
   return 0 unless -t STDOUT;
-
-  tie($FH, $_[0], $FH) or die "Can't tie $$FH";
+  tie($fh, $_[0], $fh) or die "Can't tie $$fh";
 }
 
 sub open(;$) {
@@ -55,7 +53,6 @@ sub CLOSE {
   my $ref = $_[0];
   return if $ref->[2]++;
   untie $ref->[0];
-
   my $fh;
   CORE::open($fh, "| $PAGER") ?
     do{ print $fh $ref->[1]; close $fh; } : 
