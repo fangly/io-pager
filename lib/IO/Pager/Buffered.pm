@@ -33,13 +33,15 @@ sub open(;$) {
 
 sub TIEHANDLE {
   my ($class, $out_fh) = @_;
-  if (not defined $PAGER) {
+  if (not $PAGER) {
+    my $class = __PACKAGE__;
     die "The \$PAGER environment variable is not defined. Set it manually ".
-      "or do 'use IO::Pager;' for it to be automagically populated.\n";
+      "or do 'use IO::Pager;' before 'use $class;' for it to be automagically ".
+      "populated.\n";
   }
   my $tied_fh;
   unless (CORE::open($tied_fh, "| $PAGER")) {
-    warn "Could not pipe to \$PAGER ($PAGER): $!\n";
+    warn "Could not pipe to \$PAGER ('$PAGER'): $!\n";
     return 0;
   }
   my $self = bless {}, $class;
