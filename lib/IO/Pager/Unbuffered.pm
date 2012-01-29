@@ -33,6 +33,10 @@ sub open(;$) {
 
 sub TIEHANDLE {
   my ($class, $out_fh) = @_;
+  if (not defined $PAGER) {
+    die "The \$PAGER environment variable is not defined. Set it manually ".
+      "or do 'use IO::Pager;' for it to be automagically populated.\n";
+  }
   my $tied_fh;
   unless (CORE::open($tied_fh, "| $PAGER")) {
     warn "Could not pipe to \$PAGER ($PAGER): $!\n";
@@ -47,7 +51,7 @@ sub TIEHANDLE {
 
 sub PRINT {
   my ($self, @args) = @_;
-  CORE::print {$self->{tied_fh}} @args;
+  CORE::print {$self->{tied_fh}} @args or die "Could not print on tied filehandle\n$!\n";
 }
 
 sub PRINTF {
