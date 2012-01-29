@@ -9,7 +9,8 @@ use ExtUtils::MakeMaker qw(prompt);
 use Test::More tests => 2;
 BEGIN {
       diag qq(\nYour current \$ENV{PAGER} = ").($ENV{PAGER}||'').qq("\n);
-      use_ok('IO::Pager') };
+      use_ok('IO::Pager')
+};
 
 #########################
 
