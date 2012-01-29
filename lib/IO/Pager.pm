@@ -198,7 +198,7 @@ Set $PAGER to C<more>
 
 =back
 
-Steps 1, 3 and 4 rely upon $ENV{PATH}.
+Steps 1, 3 and 4 rely upon the $PATH environment variable.
 
 =head1 SEE ALSO
 
