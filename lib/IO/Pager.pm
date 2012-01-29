@@ -12,7 +12,7 @@ BEGIN {
   # Find a pager to use and set the $PAGER environment variable
   my $which = eval { require File::Which };
   my @pagers;
-  push @pagers, $PAGER if defined $PAGER;
+  push @pagers, $PAGER if $PAGER;
   push @pagers, '/usr/local/bin/less', '/usr/bin/less', '/usr/bin/more';
   push @pagers, 'less', 'more' if $which;
   LOOP: for my $pager (@pagers) {
@@ -20,6 +20,7 @@ BEGIN {
     my @locs;
     if ( $which && (not File::Spec->file_name_is_absolute($pager)) ) {
       @locs = File::Which::where($pager);
+      next if scalar @locs == 0;
     } else {
       @locs = ($pager);
     }
