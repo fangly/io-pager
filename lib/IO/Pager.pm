@@ -8,34 +8,37 @@ use File::Spec;
 $VERSION = 0.06;
 
 BEGIN {
-  eval 'use File::Which';
-  my $which = !$@;
-  
-  if( defined($ENV{PAGER}) ){
-    #my $pager =~ (split(/(?<!\\)\s/, $ENV{PAGER}))[0];
-    my $pager = (split(' ', $ENV{PAGER}))[0];
-    
-    #Some platforms don't do -x so we use -e
-    unless( File::Spec->file_name_is_absolute($pager) && -e $pager ){
-      if( $which ){
-        #In case of non-absolute value
-        foreach( File::Which::where($ENV{PAGER}) ){
-          do{ $ENV{PAGER} = $_; last } if -e;
-        }
+  # Find a pager to use and set the $PAGER environment variable
+  my $which = eval { require File::Which };
+  my @pagers;
+  if (defined $ENV{PAGER}) {
+    push @pagers, split(' ', $ENV{PAGER});
+  }
+  push @pagers,
+      '/usr/local/bin/less',
+      '/usr/bin/less',
+      '/usr/bin/more',
+      'less',
+      'more';
+  PAGER: for my $pager (@pagers) {
+    # Find the full path of the pager if needed
+    my @locs;
+    if ( $which && (not File::Spec->file_name_is_absolute($pager)) ) {
+      @locs = File::Which::where($pager);
+    } else {
+      @locs = ($pager);
+    }
+    # Some platforms don't do -x so we use -e
+    for my $loc (@locs) {
+      if (-e $loc) {
+        # Found a suitable pager
+        $ENV{PAGER} = $loc;
+        last PAGER;
       }
     }
   }
-  else{
-    my @loc = ( '/usr/local/bin/less',
-                '/usr/bin/less',
-                '/usr/bin/more' );
-    push(@loc, File::Which::where('less'),
-               File::Which::where('more') ) if $which;
-    foreach( @loc ) {
-      do{ $ENV{PAGER} = $_; last } if -e;
-    }
-    $ENV{PAGER} ||= 'more';
-  }
+  # If all else failed, default to more
+  $ENV{PAGER} ||= 'more';
 }
 
 sub new(;$$){
@@ -60,7 +63,7 @@ IO::Pager - Select a pager and pipe text to it if destination is a TTY
 
 =head1 SYNOPSIS
 
-  #Select a pager, set $ENV{PAGER}
+  # Select an appropriate pager, set the $PAGER environment variable
   use IO::Pager;
 
   #Optionally pipe output to it
@@ -76,11 +79,11 @@ IO::Pager - Select a pager and pipe text to it if destination is a TTY
 =head1 DESCRIPTION
 
 IO::Pager is a lightweight module to locate an available pager and set
-$ENV{PAGER} (see L</NOTES>). It is also a factory for creating objects
-such as L<IO::Pager::Buffered> and L<IO::Pager::Unbuffered>.
+the $PAGER environment variable (see L</NOTES>). It is also a factory for
+creating objects such as L<IO::Pager::Buffered> and L<IO::Pager::Unbuffered>.
 
 IO::Pager subclasses are designed to programmatically decide whether
-or not to pipe a filehandle's output to a program specified in $ENV{PAGER}.
+or not to pipe a filehandle's output to a program specified in $PAGER.
 Subclasses are only required to support these filehandle methods:
 
 =over
@@ -158,8 +161,8 @@ See L</NOTES> for more information.
 
 =head1 FILES
 
-IO::Pager may fall back to these binaries in order if
-I<$ENV{PAGER}> is not executable.
+IO::Pager may fall back to these binaries in order if I<$PAGER> is not
+executable.
 
 =over
 
@@ -179,10 +182,10 @@ The algorithm for determining which pager to use is as follows:
 
 =over
 
-=item 1. Defer to $ENV{PAGER}
+=item 1. Defer to $PAGER
 
-If $ENV{PAGER} is set, use the pagger it identifies, unless this pager
-is not available.
+If the $PAGER environment variable is set, use the pagger it identifies,
+unless this pager is not available.
 
 =item 2. Usual suspects
 
@@ -194,7 +197,7 @@ If File::Which is available check if C<less> or L<more> can be used.
 
 =item 4. more
 
-Set $ENV{PAGER} to C<more>
+Set $PAGER to C<more>
 
 =back
 
