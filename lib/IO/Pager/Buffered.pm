@@ -8,7 +8,7 @@ use Tie::Handle;
 
 $VERSION = 0.06;
 
-sub new(;$){
+sub new(;$) {
   no strict 'refs';
   my $FH = $_[1] || *{select()};
 
@@ -27,30 +27,30 @@ sub new(;$){
   tie($FH, $_[0], $FH) or die "Can't tie $$FH";
 }
 
-sub open(;$){
+sub open(;$) {
   new IO::Pager::Buffered;
 }
 
-sub TIEHANDLE{
+sub TIEHANDLE {
   bless [$_[1], '', 0], $_[0];
 }
 
-sub PRINT{
+sub PRINT {
   my $ref = shift;
   $ref->[1] .= join($,||'', @_);
 }
 
-sub PRINTF{
+sub PRINTF {
   PRINT shift, sprintf shift, @_;
 }
 
-sub WRITE{
+sub WRITE {
   PRINT shift, substr $_[0], $_[2]||0, $_[1];
 }
 
 
 *DESTROY = *CLOSE;
-sub CLOSE{
+sub CLOSE {
   local $^W = 0;
   my $ref = $_[0];
   return if $ref->[2]++;
@@ -64,8 +64,8 @@ sub CLOSE{
 }
 
 1;
+
 __END__
-=pod
 
 =head1 NAME
 

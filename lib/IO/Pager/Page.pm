@@ -3,20 +3,23 @@ use vars '$VERSION';
 
 $VERSION = 0.06;
 
-#The meat
-BEGIN{
+# The meat
+BEGIN {
+  # Find a pager
   use IO::Pager;
+  # Pipe stdout to it
   new IO::Pager *STDOUT;
 }
 
-#Gravy
-sub import{
+# Gravy
+sub import {
   shift;
   my %opt = @_;
   $SIG{PIPE} = sub{ exit 0; } if $opt{hush};
 }
 
 "Badee badee badee that's all folks!";
+
 __END__
 
 =head1 NAME
@@ -37,7 +40,7 @@ environmenta variable or one of a standard list of pagers.
 
   BEGIN{
     use IO::Pager::Page;
-    #use I::P::P first, just in case another module sends output to STDOUT
+    # use I::P::P first, just in case another module sends output to STDOUT
   }
   print<<HEREDOC;
   ...

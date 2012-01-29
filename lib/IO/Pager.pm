@@ -36,12 +36,12 @@ BEGIN {
   $PAGER ||= 'more';
 }
 
-sub new(;$$){
+sub new(;$$) {
   shift;
   goto &open;
 }
 
-sub open(;$$){
+sub open(;$$) {
   my $class = scalar @_ > 1 ? pop : undef;
   $class ||= 'IO::Pager::Unbuffered';
   eval "require $class";
@@ -52,8 +52,6 @@ sub open(;$$){
 
 __END__
 
-=pod
-
 =head1 NAME
 
 IO::Pager - Select a pager and pipe text to it if destination is a TTY
@@ -63,7 +61,7 @@ IO::Pager - Select a pager and pipe text to it if destination is a TTY
   # Select an appropriate pager, set the $PAGER environment variable
   use IO::Pager;
 
-  # Optionally pipe output to it
+  # Optionally, pipe output to it
   {
     #local $STDOUT =     IO::Pager::open *STDOUT;
     local  $STDOUT = new IO::Pager       *STDOUT;
