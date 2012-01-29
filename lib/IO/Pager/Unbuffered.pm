@@ -88,8 +88,8 @@ IO::Pager::Unbuffered - Pipe output to a pager if destination is to a TTY
 =head1 DESCRIPTION
 
 IO::Pager is designed to programmatically decide whether or not to point
-the STDOUT file handle into a pipe to program specified in $ENV{PAGER}
-or one of a standard list of pagers.
+the STDOUT file handle into a pipe to program specified in the $PAGER
+environment variable or one of a standard list of pagers.
 
 =head2 new( [FILEHANDLE] )
 

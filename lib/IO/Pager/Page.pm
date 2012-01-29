@@ -30,8 +30,8 @@ Pipes STDOUT to a pager if STDOUT is a TTY
 =head1 DESCRIPTION
 
 IO::Pager was designed to programmatically decide whether or not to point
-the STDOUT file handle into a pipe to program specified in $ENV{PAGER}
-or one of a standard list of pagers.
+the STDOUT file handle into a pipe to program specified in the $PAGER
+environmenta variable or one of a standard list of pagers.
 
 =head1 USAGE
 
