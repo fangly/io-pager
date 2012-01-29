@@ -9,56 +9,63 @@ use Tie::Handle;
 $VERSION = 0.06;
 
 sub new(;$) {
+  my ($class, $out_fh) = @_;
   no strict 'refs';
-  my $fh = $_[1] || *{select()};
+  $out_fh ||= *{select()};
   # STDOUT & STDERR are separately bound to tty
-  if( defined( my $FHn = fileno($fh) ) ){
+  if( defined( my $FHn = fileno($out_fh) ) ){
     if( $FHn == fileno(STDOUT) ){
-      return 0 unless -t $fh;
+      return 0 unless -t $out_fh;
     }
     if( $FHn == fileno(STDERR) ){
-      return 0 unless -t $fh;
+      return 0 unless -t $out_fh;
     }
   }
   # This allows us to have multiple pseudo-STDOUT
   return 0 unless -t STDOUT;
-  tie($fh, $_[0], $fh) or die "Can't tie $$fh";
+  tie *$out_fh, $class, $out_fh or die "Could not tie $$out_fh\n";
 }
 
 sub open(;$) {
-  new IO::Pager::Unbuffered;
+  new IO::Pager::Unbuffered $out_fh;
 }
 
 sub TIEHANDLE {
-  my $fh;
-  unless( CORE::open($fh, "| $PAGER") ){
+  my ($class, $out_fh) = @_;
+  my $tied_fh;
+  unless( CORE::open($tied_fh, "| $PAGER") ){
     warn "Can't pipe to \$PAGER ($PAGER): $!\n";
     return 0;
   }
-  bless [$_[1], $fh, 0], $_[0];
+  my $self = bless {}, $class;
+  $self->{out_fh}  = $out_fh;
+  $self->{tied_fh} = $tied_fh;
+  $self->{closed}  = 0;
+  return $self;
 }
 
 sub PRINT {
-  my $ref = shift;
-  CORE::print {$ref->[1]} @_;
+  my ($self, @args) = @_;
+  CORE::print {$self->{tied_fh}} @args;
 }
 
 sub PRINTF {
-  PRINT shift, sprintf shift, @_;
+  my ($self, $format, @args) = @_;
+  PRINT $self, sprintf($format, @args);
 }
 
 sub WRITE {
-  PRINT shift, substr $_[0], $_[2]||0, $_[1];
+  my ($self, $scalar, $length, $offset) = @_;
+  PRINT $self, substr($scalar, $offset||0, $length);
 }
-
 
 *DESTROY = *CLOSE;
 sub CLOSE {
+  my ($self) = @_;
   local $^W = 0;
-  my $ref = $_[0];
-  return if $ref->[2]++;
-  untie $ref->[0];
-  close($ref->[1]);
+  return if $self->{closed}++;
+  untie *{$self->{out_fh}};
+  close $self->{tied_fh};
 }
 
 1;
