@@ -18,19 +18,19 @@ BEGIN {
     #Some platforms don't do -x so we use -e
     unless( File::Spec->file_name_is_absolute($pager) && -e $pager ){
       if( $which ){
-	#In case of non-absolute value
-	foreach( File::Which::where($ENV{PAGER}) ){
-	  do{ $ENV{PAGER} = $_; last } if -e;
-	}
+        #In case of non-absolute value
+        foreach( File::Which::where($ENV{PAGER}) ){
+          do{ $ENV{PAGER} = $_; last } if -e;
+        }
       }
     }
   }
   else{
     my @loc = ( '/usr/local/bin/less',
-		'/usr/bin/less',
-		'/usr/bin/more' );
+                '/usr/bin/less',
+                '/usr/bin/more' );
     push(@loc, File::Which::where('less'),
-	       File::Which::where('more') ) if $which;
+               File::Which::where('more') ) if $which;
     foreach( @loc ) {
       do{ $ENV{PAGER} = $_; last } if -e;
     }

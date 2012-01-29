@@ -58,7 +58,7 @@ sub CLOSE{
   CORE::open(PAGER, "| $ENV{PAGER}") ?
     do{ print PAGER $ref->[1]; close PAGER; } : 
     do{ warn -x $ENV{PAGER} ? "Can't pipe to $ENV{PAGER}: $!\n" :
-	  "Couldn't find a pager!\n"; print $ref->[1]; }
+          "Couldn't find a pager!\n"; print $ref->[1]; }
 }
 
 1;
