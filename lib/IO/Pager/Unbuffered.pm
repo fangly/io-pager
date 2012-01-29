@@ -34,7 +34,7 @@ sub TIEHANDLE{
   my $PAGER;
 
   unless( CORE::open($PAGER, "| $ENV{PAGER}") ){
-    warn "Can't pipe to $ENV{PAGER}: $!\n";
+    warn "Can't pipe to \$ENV{PAGER}: $!\n";
     return 0;
   }
 
