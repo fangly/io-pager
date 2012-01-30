@@ -16,6 +16,8 @@ BEGIN {
 # Insert your test code below, the Test::More module is use()ed here so read
 # its man page ( perldoc Test::More ) for help writing this test script.
 
+#XXX unless -t
+
 diag qq(\nYour IO::Pager \$ENV{PAGER} = "$ENV{PAGER}"\n);
 select(STDERR);
 my $A = prompt("\n\nIs this reasonable? [Yn]");

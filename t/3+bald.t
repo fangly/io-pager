@@ -22,17 +22,17 @@ SKIP: {
   diag(<<EOF
 
 Here's some text. Reading is fun.  ABCDEFGHIJKLMNOPQRSTUVWXYZ
-You should not be seeing this text should from within a pager.
+You should not be seeing this text from within a pager.
 
 EOF
 );
   select(STDERR);
   my $A = prompt("\n\nWas that sent directly to your TTY? [Yn]");
-  ok( ($A =~ /^y(?:es)?/i || $A eq ''), 'diag works');
+  ok( ($A =~ /^y(?:es)?/i || $A eq ''), 'Diagnostic');
 
 
   {
-    local $STDOUT = new IO::Pager *BOB;
+    local $STDOUT = new IO::Pager *BOB;#, 'IO::Pager::Unbuffered';
     eval{
       my $i=0;
       $SIG{PIPE} = sub{ die };
@@ -41,8 +41,9 @@ EOF
 	sleep 1 unless $i%400;
       }
     };
+    close(BOB);
   }
 
   $A = prompt("\n\nWas that sent to a pager? [Yn]");
-  ok( ($A =~ /^y(?:es)?/i || $A eq ''), 'Unbuffered works');
+  ok( ($A =~ /^y(?:es)?/i || $A eq ''), 'Unbuffered glob filehandle');
 }

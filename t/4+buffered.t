@@ -23,7 +23,7 @@ SKIP: {
   diag(<<EOF
 
 Here's some text. Reading is fun.  ABCDEFGHIJKLMNOPQRSTUVWXYZ
-You should not be seeing this text should from within a pager.
+You should not be seeing this text from within a pager.
 
 EOF
 );
