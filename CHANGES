@@ -11,6 +11,8 @@ Revision history for Perl extension IO::Pager.
 
       *  Fixed several mis-coded segments that did not affect operation
 
+      Added C<tell> in IO::Pager::Unbuffered to check size of buffered output.
+
       Pager open error now sets $! instead of issuing a warning, to more
       closely emulate the C<open> experience. Check the return value as before.
 
