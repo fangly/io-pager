@@ -1,12 +1,12 @@
 package IO::Pager::Page;
 use vars '$VERSION';
 
-$VERSION = 0.05;
+$VERSION = 0.07;
 
 #The meat
 BEGIN{
   use IO::Pager;
-  new IO::Pager *STDOUT;
+  new IO::Pager *STDOUT, 'IO::Pager::Unbuffered';
 }
 
 #Gravy
@@ -29,7 +29,7 @@ Pipes STDOUT to a pager if STDOUT is a TTY
 
 =head1 DESCRIPTION
 
-IO::Pager is designed to programmaticly decide whether or not to point
+IO::Pager is designed to programmatically decide whether or not to point
 the STDOUT file handle into a pipe to program specified in $ENV{PAGER}
 or one of a standard list of pagers.
 
@@ -44,7 +44,7 @@ or one of a standard list of pagers.
   A bunch of text later
   HEREDOC
 
-If you wish to forgo the potential for a I<Broken Pipe> foible resulting
+If you wish to forego the potential for a I<Broken Pipe> foible resulting
 from the user exiting the pager prematurely load IO::Pager::Page like so:
 
   use IO::Pager::Page hush=>1;

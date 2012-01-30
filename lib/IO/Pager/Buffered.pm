@@ -5,7 +5,7 @@ use strict;
 use vars qw( $VERSION );
 use Tie::Handle;
 
-$VERSION = 0.03;
+$VERSION = 0.10;
 
 sub new(;$){
   no strict 'refs';
@@ -31,7 +31,12 @@ sub open(;$){
 }
 
 sub TIEHANDLE{
+        #FH, PAGER, CHLD
   bless [$_[1], '', 0], $_[0];
+}
+
+sub BINMODE{
+  binmode(shift()->[0], @_);
 }
 
 sub PRINT{
@@ -41,6 +46,13 @@ sub PRINT{
 
 sub PRINTF{
   PRINT shift, sprintf shift, @_;
+}
+
+#How big is the buffer?
+sub TELL{
+  my $ref = shift;
+  #XXX $[
+  return bytes::length($ref->[1]);
 }
 
 sub WRITE{
@@ -83,7 +95,7 @@ IO::Pager::Buffered - Pipe deferred output to a pager if output is to a TTY
 
 =head1 DESCRIPTION
 
-IO::Pager is designed to programmaticly decide whether or not to point
+IO::Pager is designed to programmatically decide whether or not to point
 the STDOUT file handle into a pipe to program specified in $ENV{PAGER}
 or one of a standard list of pagers.
 
@@ -92,7 +104,7 @@ If this is not what you want look at another subclass such as
 L<IO::Pager::Unbuffered>. While probably not common, this may be useful in
 some cases,such as buffering all output to STDOUT while the process occurs,
 showing only warnings on STDERR, then displaying the output to STDOUT after.
-Or alternately letting output to STDERR slide by and defer warnings for later
+Or alternately letting output to STDOUT slide by and defer warnings for later
 perusal.
 
 =head2 new( [FILEHANDLE] )
@@ -137,7 +149,7 @@ L<IO::Pager>, L<IO::Pager::Unbuffered>, L<IO::Pager::Page>
 
 Jerrad Pierce <jpierce@cpan.org>
 
-This module is forked from IO::Page 0.02 by Monte Mitzelfelt
+This module inspired by Monte Mitzelfelt's IO::Page 0.02
 
 =head1 LICENSE
 

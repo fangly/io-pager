@@ -1,2 +1,4 @@
-require 't/3.t';
-exec($^X, '-Mblib', 't/4.t');
+foreach( glob("t/*+*.t") ){
+  print "Running $_...\n";
+  system($^X, '-Mblib', $_);
+}

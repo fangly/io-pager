@@ -4,15 +4,15 @@ use 5;
 use strict;
 use vars qw( $VERSION );
 use File::Spec;
+use IO::WrapTie;
 
-$VERSION = 0.05;
+$VERSION = 0.07;
 
 BEGIN {
   eval 'use File::Which';
   my $which = !$@;
   
   if( defined($ENV{PAGER}) ){
-#    my $pager =~ (split(/(?<!\\)\s/, $ENV{PAGER}))[0];
     my $pager = (split(' ', $ENV{PAGER}))[0];
     
     #Some platforms don't do -x so we use -e
@@ -26,6 +26,7 @@ BEGIN {
     }
   }
   else{
+      #XXX others? w3m, most
     my @loc = ( '/usr/local/bin/less',
 		'/usr/bin/less',
 		'/usr/bin/more' );
@@ -44,9 +45,12 @@ sub new(;$$){
 }
 
 sub open(;$$){
-  my $class = scalar @_ > 1 ? pop : undef;
-  $class ||= 'IO::Pager::Unbuffered';
-  eval "require $class";
+  my $class = scalar @_ > 1 ? pop : 'IO::Pager::Unbuffered';
+  $class =~ s/^(?!IO::Pager::)/IO::Pager::/;
+  eval "require $class" || die $@;
+
+  #Undefined subroutine &IO::Pager::Unbuffered::TIEHANDLE
+#  my $FH = wraptie($class, $_[0]);
   $class->new($_[0], $class);
 }
 
@@ -65,8 +69,8 @@ IO::Pager - Select a pager, optionally pipe it output if destination is a TTY
 
   #Optionally pipe output
   {
-    #local $STDOUT =     IO::Pager::open *STDOUT;
-    local  $STDOUT = new IO::Pager       *STDOUT;
+    #local $retval =     IO::Pager::open *STDOUT; #
+    local  $retval = new IO::Pager       *STDOUT, 'Buffered';
     print <<"  HEREDOC" ;
     ...
     A bunch of text later
@@ -76,8 +80,9 @@ IO::Pager - Select a pager, optionally pipe it output if destination is a TTY
 =head1 DESCRIPTION
 
 IO::Pager is lightweight and can be used to locate an available pager
-and set $ENV{PAGER} (see L</NOTES>) or as a factory for creating objects
-defined elsewhere such as L<IO::Pager::Buffered> and L<IO::Pager::Unbuffered>.
+and set $ENV{PAGER} accordingly (see L</NOTES>) or as a factory for creating
+objects defined elsewhere such as L<IO::Pager::Buffered> and
+L<IO::Pager::Unbuffered>. 
 
 IO::Pager subclasses are designed to programmatically decide whether
 or not to pipe a filehandle's output to a program specified in $ENV{PAGER}.
@@ -85,6 +90,10 @@ Subclasses are only required to support filehandle output methods and close,
 namely
 
 =over
+
+=item BINMODE
+
+Supports binmode() of the filehandle for I/O layer selection like UTF-8 encoding.
 
 =item CLOSE
 
@@ -134,8 +143,8 @@ An alias for new.
 =head2 close( FILEHANDLE )
 
 Explicitly close the filehandle, this stops any redirection of output
-on FILEHANDLE that may have been warranted. Normally you'd just wait for the
-object to pass out of scope.
+on FILEHANDLE that may have been warranted. Normally you'd just wait
+for the object to pass out of scope.
 
 I<This does not default to the current filehandle>.
 
@@ -176,7 +185,7 @@ See L</NOTES> for more information.
 
 =head1 NOTES
 
-The algorythm for determining which pager is to use as follows:
+The algorithm for determining which pager is to use as follows:
 
 =over
 
@@ -211,7 +220,7 @@ L<IO::Page>, L<Tool::Less>
 
 Jerrad Pierce <jpierce@cpan.org>
 
-This module is forked from IO::Page 0.02 by Monte Mitzelfelt
+This module inspired by Monte Mitzelfelt's IO::Page 0.02
 
 =head1 LICENSE
 

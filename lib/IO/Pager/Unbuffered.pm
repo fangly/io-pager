@@ -2,10 +2,11 @@ package IO::Pager::Unbuffered;
 
 use 5;
 use strict;
-use vars qw( $VERSION );
+use vars qw(@ISA $VERSION);
 use Tie::Handle;
 
-$VERSION = 0.05;
+@ISA = qw(Tie::Handle);
+$VERSION = 0.10;
 
 sub new(;$){
   no strict 'refs';
@@ -31,19 +32,23 @@ sub open(;$){
 }
 
 sub TIEHANDLE{
-  my $PAGER;
-
-  unless( CORE::open($PAGER, "| $ENV{PAGER}") ){
-    warn "Can't pipe to $ENV{PAGER}: $!\n";
+  #XXX data structure/assignment cleanness
+  my $child;
+  unless( $child = CORE::open($_[1], "| $ENV{PAGER}") ){
+    $! = "Can't pipe to $ENV{PAGER}: $!";
     return 0;
   }
 
-  bless [$_[1], $PAGER, 0], $_[0];
+        #FH, PAGER, CHLD
+  bless [$_[1], $ENV{PAGER}, $child], $_[0];
+}
+
+sub BINMODE{
+  binmode(shift()->[0], @_);
 }
 
 sub PRINT{
-  my $ref = shift;
-  CORE::print {$ref->[1]} @_;
+  CORE::print {shift()->[0]} @_;
 }
 
 sub PRINTF{
@@ -54,15 +59,15 @@ sub WRITE{
   PRINT shift, substr $_[0], $_[2]||0, $_[1];
 }
 
-
-*DESTROY = *CLOSE;
+#XXX close called automagically by destroy on scope exit?
+#*DESTROY = *CLOSE;
 sub CLOSE{
-  local $^W = 0;
+#  local $^W = 0;
   my $ref = $_[0];
-  return if $ref->[2]++;
-  untie $ref->[0];
 
-  close($ref->[1]);
+  close($ref->[0]);
+#  return if $ref->[2]++;
+  untie $ref;
 }
 
 1;
@@ -87,7 +92,7 @@ IO::Pager::Unbuffered - Pipe output to a pager if output is to a TTY
 
 =head1 DESCRIPTION
 
-IO::Pager is designed to programmaticly decide whether or not to point
+IO::Pager is designed to programmatically decide whether or not to point
 the STDOUT file handle into a pipe to program specified in $ENV{PAGER}
 or one of a standard list of pagers.
 
@@ -139,7 +144,7 @@ L<IO::Pager>, L<IO::Pager::Buffered>, L<IO::Pager::Page>
 
 Jerrad Pierce <jpierce@cpan.org>
 
-This module is forked from IO::Page 0.02 by Monte Mitzelfelt
+This module inspired by Monte Mitzelfelt's IO::Page 0.02
 
 Significant proddage provided by Tye McQueen.
 
