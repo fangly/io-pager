@@ -159,7 +159,9 @@ This module inspired by Monte Mitzelfelt's IO::Page 0.02
 
 Significant proddage provided by Tye McQueen.
 
-=head1 LICENSE
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2003-2012 Jerrad Pierce
 
 =over
 

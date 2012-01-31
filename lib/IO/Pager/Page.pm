@@ -66,7 +66,9 @@ Jerrad Pierce <jpierce@cpan.org>
 
 Florent Angly <florent.angly@gmail.com>
 
-=head1 LICENSE
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2003-2012 Jerrad Pierce
 
 =over
 
