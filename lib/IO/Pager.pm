@@ -118,7 +118,7 @@ For anything else, YMMV.
 Instantiate a new IO::Pager to paginate FILEHANDLE if necessary.
 I<Assign the return value to a scoped variable>.
 
-The object will be of type SUBCLASS (L<IO::Pager::Unbuffered by default). See
+The object will be of type SUBCLASS (L<IO::Pager::Unbuffered> by default). See
 the appropriate subclass for details.
 
 =over
