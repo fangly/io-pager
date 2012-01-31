@@ -8,6 +8,8 @@ our $VERSION = 0.10;
 
 # The meat
 BEGIN {
+  # Do nothing in Perl compile mode
+  return if $^C;
   # Find a pager
   use IO::Pager;
   # Pipe stdout to it
