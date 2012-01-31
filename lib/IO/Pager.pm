@@ -2,13 +2,11 @@ package IO::Pager;
 
 use 5;
 use strict;
-use vars qw( $VERSION );
 use Env qw(PAGER);
 use File::Spec;
 use IO::WrapTie;
 
-
-$VERSION = 0.10;
+our $VERSION = 0.10;
 
 
 BEGIN {

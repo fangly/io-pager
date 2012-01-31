@@ -2,12 +2,11 @@ package IO::Pager::Buffered;
 
 use 5;
 use strict;
-use vars qw( @ISA $VERSION );
 use Env qw( PAGER );
 use Tie::Handle;
+use base qw( Tie::Handle );
 
-@ISA = qw(Tie::Handle);
-$VERSION = 0.10;
+our $VERSION = 0.10;
 
 
 sub new(;$) {
@@ -43,7 +42,7 @@ sub TIEHANDLE {
   }
   my $tied_fh;
   unless (CORE::open($tied_fh, "| $PAGER")) {
-    warn "Could not pipe to \$PAGER ('$PAGER'): $!\n";
+    $! = "Could not pipe to \$PAGER ('$PAGER'): $!\n";
     return 0;
   }
   my $self = bless {}, $class;

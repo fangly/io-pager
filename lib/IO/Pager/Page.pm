@@ -1,8 +1,6 @@
 package IO::Pager::Page;
-use vars '$VERSION';
 
-
-$VERSION = 0.10;
+our $VERSION = 0.10;
 
 
 # The meat

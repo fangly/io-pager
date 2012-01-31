@@ -2,12 +2,11 @@ package IO::Pager::Unbuffered;
 
 use 5;
 use strict;
-use vars qw( @ISA $VERSION );
 use Env qw( PAGER );
 use Tie::Handle;
+use base qw( Tie::Handle );
 
-@ISA = qw(Tie::Handle);
-$VERSION = 0.10;
+our $VERSION = 0.10;
 
 
 sub new(;$) {
