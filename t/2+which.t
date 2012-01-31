@@ -21,11 +21,11 @@ BEGIN {
 #XXX unless -t
 diag qq(\nYour IO::Pager PAGER: ").($PAGER||'').qq("\n);
 
-select(STDERR);
-
 SKIP: {
   skip "Can not run with Test::Harness. Run 'perl -Mblib t.pl' after 'make test'.", 1
     if $HARNESS_ACTIVE;
+
+  select(STDERR);
 
   my $A = prompt("\n\nIs this reasonable? [Yn]");
   ok( ($A =~ /^y(?:es)?/i || $A eq ''), 'Found a pager fine');
