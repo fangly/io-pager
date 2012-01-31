@@ -173,4 +173,10 @@ Significant proddage provided by Tye McQueen.
 
 =back
 
+Or, if you prefer:
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself, either Perl version 5.0 or,
+at your option, any later version of Perl 5 you may have available.
+
 =cut

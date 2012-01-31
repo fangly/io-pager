@@ -20,8 +20,10 @@ To install this module type the following:
 
    perl Makefile.PL
    make
+   # Run non-interactive tests
    make test
-   perl -Mblib t.pl #Helas the real tests don't work well under Test::*
+   # Run interactive tests
+   perl -Mblib t.pl
    make install
 
 DEPENDENCIES
@@ -40,7 +42,7 @@ into quirks, it tends to be happiest under perl built with perlio not stdio.
 
 COPYRIGHT AND LICENSE
 
-Copyright (C) 2003 Jerrad Pierce
+Copyright (C) 2003-2012 Jerrad Pierce
 
  * Thou shalt not claim ownership of unmodified materials.
 
@@ -49,3 +51,9 @@ Copyright (C) 2003 Jerrad Pierce
  * Thou shalt grant the indemnity of the provider of materials.
 
  * Thou shalt use and dispense freely without other restrictions.
+
+Or, if you prefer:
+
+  This library is free software; you can redistribute it and/or modify it
+  under the same terms as Perl itself, either Perl version 5.0 or, at your
+  option, any later version of Perl 5 you may have available.
