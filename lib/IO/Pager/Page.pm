@@ -64,6 +64,8 @@ L<IO::Page>, L<IO::Pager>, L<IO::Pager::Unbuffered>, L<IO::Pager::Buffered>
 
 Jerrad Pierce <jpierce@cpan.org>
 
+Florent Angly <florent.angly@gmail.com>
+
 =head1 LICENSE
 
 =over

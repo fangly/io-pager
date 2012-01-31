@@ -16,6 +16,9 @@ WriteMakefile(
        'File::Which'    => 0,
     }},
     ($] >= 5.005 ?  # Add these new keywords supported since 5.005
-       (ABSTRACT_FROM    => 'lib/IO/Pager.pm', # retrieve abstract from module
-        AUTHOR           => 'Jerrad Pierce <belg4mit@mit.edu>') : ()),
+       (
+        ABSTRACT_FROM    => 'lib/IO/Pager.pm', # retrieve abstract from module
+        AUTHOR           => [ 'Jerrad Pierce <belg4mit@mit.edu>',
+                              'Florent Angly <florent.angly@gmail.com>' ],
+       ) : ()),
 );

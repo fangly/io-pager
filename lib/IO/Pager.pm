@@ -219,6 +219,8 @@ L<IO::Page>, L<Meta::Tool::Less>
 
 Jerrad Pierce <jpierce@cpan.org>
 
+Florent Angly <florent.angly@gmail.com>
+
 This module inspired by Monte Mitzelfelt's IO::Page 0.02
 
 =head1 LICENSE
