@@ -207,7 +207,7 @@ Set I<PAGER> to C<more>
 
 =back
 
-Steps 1, 3 and 4 rely upon the $PATH environment variable.
+Steps 1, 3 and 4 rely upon the I<PATH> environment variable.
 
 =head1 SEE ALSO
 
