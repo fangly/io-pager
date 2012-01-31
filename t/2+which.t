@@ -9,7 +9,7 @@ use ExtUtils::MakeMaker qw(prompt);
 use Env qw(PAGER HARNESS_ACTIVE);
 use Test::More;
 BEGIN {
-      diag qq(\nYour current \$PAGER: ").($PAGER||'').qq("\n);
+      diag qq(\nYour current PAGER: ").($PAGER||'').qq("\n);
       use_ok('IO::Pager');
 };
 

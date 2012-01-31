@@ -56,7 +56,7 @@ Revision history for Perl extension IO::Pager.
 
       Removed a stupid debug message from IO::Pager::new.
 
-      Improved $ENV{PAGER} selection algorithm.
+      Improved PAGER selection algorithm.
 
       Touched up documentation.
 
