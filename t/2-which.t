@@ -7,7 +7,7 @@
 
 use ExtUtils::MakeMaker qw(prompt);
 use Env qw(PAGER HARNESS_ACTIVE);
-use Test::More tests => 2;
+use Test::More;
 BEGIN {
       diag qq(\nYour current \$PAGER: ").($PAGER||'').qq("\n);
       use_ok('IO::Pager');
@@ -24,9 +24,11 @@ diag qq(\nYour IO::Pager PAGER: ").($PAGER||'').qq("\n);
 select(STDERR);
 
 SKIP: {
-  skip("Can not run with Test::Harness. Run 'perl -Mblib t.pl' after 'make test'.", 1)
+  skip "Can not run with Test::Harness. Run 'perl -Mblib t.pl' after 'make test'.", 1
     if $HARNESS_ACTIVE;
 
   my $A = prompt("\n\nIs this reasonable? [Yn]");
   ok( ($A =~ /^y(?:es)?/i || $A eq ''), 'Found a pager fine');
 }
+
+done_testing;

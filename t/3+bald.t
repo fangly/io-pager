@@ -7,7 +7,7 @@
 
 use ExtUtils::MakeMaker qw(prompt);
 use Env qw(HARNESS_ACTIVE);
-use Test::More tests => 3;
+use Test::More;
 BEGIN { use_ok('IO::Pager') };
 
 #########################
@@ -17,7 +17,7 @@ BEGIN { use_ok('IO::Pager') };
 
 
 SKIP: {
-  skip("Can not run with Test::Harness. Run 'perl -Mblib t.pl' after 'make test'.", 2)
+  skip "Can not run with Test::Harness. Run 'perl -Mblib t.pl' after 'make test'.", 1
     if $HARNESS_ACTIVE;
   
   diag(<<EOF
@@ -48,3 +48,5 @@ EOF
   $A = prompt("\n\nWas that sent to a pager? [Yn]");
   ok( ($A =~ /^y(?:es)?/i || $A eq ''), 'Unbuffered glob filehandle');
 }
+
+done_testing;
