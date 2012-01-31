@@ -2,11 +2,13 @@ package IO::Pager::Unbuffered;
 
 use 5;
 use strict;
-use vars qw( $VERSION );
-use Env qw(PAGER);
+use vars qw( @ISA $VERSION );
+use Env qw( PAGER );
 use Tie::Handle;
 
-$VERSION = 0.06;
+@ISA = qw(Tie::Handle);
+$VERSION = 0.10;
+
 
 sub new(;$) {
   my ($class, $out_fh) = @_;
@@ -41,7 +43,7 @@ sub TIEHANDLE {
   }
   my $tied_fh;
   unless (CORE::open($tied_fh, "| $PAGER")) {
-    warn "Could not pipe to \$PAGER ('$PAGER'): $!\n";
+    $! = "Could not pipe to \$PAGER ('$PAGER'): $!\n";
     return 0;
   }
   my $self = bless {}, $class;
@@ -49,6 +51,11 @@ sub TIEHANDLE {
   $self->{tied_fh} = $tied_fh;
   $self->{closed}  = 0;
   return $self;
+}
+
+sub BINMODE {
+  my ($self, @args) = @_;
+  binmode($self->{tied_fh}, @args);
 }
 
 sub PRINT {
@@ -66,11 +73,9 @@ sub WRITE {
   PRINT $self, substr($scalar, $offset||0, $length);
 }
 
-*DESTROY = *CLOSE;
 sub CLOSE {
   my ($self) = @_;
-  local $^W = 0;
-  return if $self->{closed}++;
+  # return if $self->{closed}++; ### ?
   untie *{$self->{out_fh}};
   close $self->{tied_fh};
 }
@@ -130,16 +135,16 @@ I<This does not default to the current filehandle>.
 
 You probably want to do something with SIGPIPE eg;
 
-  eval{
-    $SIG{PIPE} = sub{ die };
+  eval {
+    $SIG{PIPE} = sub { die };
     local $STDOUT = IO::Pager::open(*STDOUT);
 
-    while(1){
-      #Do something
+    while (1) {
+      # Do something
     }
   }
 
-  #Do something else
+  # Do something else
 
 =head1 SEE ALSO
 
@@ -149,7 +154,7 @@ L<IO::Pager>, L<IO::Pager::Buffered>, L<IO::Pager::Page>
 
 Jerrad Pierce <jpierce@cpan.org>
 
-This module was forked from IO::Page 0.02 by Monte Mitzelfelt
+This module inspired by Monte Mitzelfelt's IO::Page 0.02
 
 Significant proddage provided by Tye McQueen.
 

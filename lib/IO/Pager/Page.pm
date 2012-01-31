@@ -1,14 +1,16 @@
 package IO::Pager::Page;
 use vars '$VERSION';
 
-$VERSION = 0.06;
+
+$VERSION = 0.10;
+
 
 # The meat
 BEGIN {
   # Find a pager
   use IO::Pager;
   # Pipe stdout to it
-  new IO::Pager *STDOUT;
+  new IO::Pager *STDOUT, 'IO::Pager::Unbuffered';
 }
 
 # Gravy
@@ -33,7 +35,7 @@ Pipes STDOUT to a pager if STDOUT is a TTY
 
 IO::Pager was designed to programmatically decide whether or not to point
 the STDOUT file handle into a pipe to program specified in the $PAGER
-environmenta variable or one of a standard list of pagers.
+environment variable or one of a standard list of pagers.
 
 =head1 USAGE
 

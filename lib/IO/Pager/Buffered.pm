@@ -2,11 +2,13 @@ package IO::Pager::Buffered;
 
 use 5;
 use strict;
-use vars qw( $VERSION );
-use Env qw(PAGER);
+use vars qw( @ISA $VERSION );
+use Env qw( PAGER );
 use Tie::Handle;
 
-$VERSION = 0.06;
+@ISA = qw(Tie::Handle);
+$VERSION = 0.10;
+
 
 sub new(;$) {
   my ($class, $out_fh) = @_;
@@ -52,6 +54,11 @@ sub TIEHANDLE {
   return $self;
 }
 
+sub BINMODE {
+  my ($self, @args) = @_;
+  binmode($self->{tied_fh}, @args);
+}
+
 sub PRINT {
   my ($self, @args) = @_;
   $self->{buffer} .= join($,||'', @args);
@@ -62,17 +69,21 @@ sub PRINTF {
   PRINT $self, sprintf($format, @args);
 }
 
+sub TELL {
+  # Return how big the buffer is
+  my ($self) = @_;
+  #XXX $[
+  return bytes::length($self->{buffer});
+}
+
 sub WRITE {
   my ($self, $scalar, $length, $offset) = @_;
   PRINT $self, substr($scalar, $offset||0, $length);
 }
 
-
-*DESTROY = *CLOSE;
 sub CLOSE {
   my ($self) = @_;
-  local $^W = 0;
-  return if $self->{closed}++;
+  # return if $self->{closed}++; ### ?
   untie *{$self->{out_fh}};
   CORE::print {$self->{tied_fh}} $self->{buffer}
     or die "Could not print on tied filehandle\n$!\n";
@@ -110,7 +121,7 @@ If this is not what you want look at another subclass such as
 L<IO::Pager::Unbuffered>. While probably not common, this may be useful in
 some cases,such as buffering all output to STDOUT while the process occurs,
 showing only warnings on STDERR, then displaying the output to STDOUT after.
-Or alternately letting output to STDERR slide by and defer warnings for later
+Or alternately letting output to STDOUT slide by and defer warnings for later
 perusal.
 
 =head2 new( [FILEHANDLE] )
@@ -155,7 +166,7 @@ L<IO::Pager>, L<IO::Pager::Unbuffered>, L<IO::Pager::Page>
 
 Jerrad Pierce <jpierce@cpan.org>
 
-This module was forked from IO::Page 0.02 by Monte Mitzelfelt
+This module inspired by Monte Mitzelfelt's IO::Page 0.02
 
 =head1 LICENSE
 

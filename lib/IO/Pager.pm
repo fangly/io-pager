@@ -5,8 +5,11 @@ use strict;
 use vars qw( $VERSION );
 use Env qw(PAGER);
 use File::Spec;
+use IO::WrapTie;
 
-$VERSION = 0.06;
+
+$VERSION = 0.10;
+
 
 BEGIN {
   # Find a pager to use and set the $PAGER environment variable
@@ -42,10 +45,14 @@ sub new(;$$) {
   IO::Pager::open($out_fh, $subclass);
 }
 
+
 sub open(;$$) {
   my ($out_fh, $subclass) = @_;
   $subclass ||= 'IO::Pager::Unbuffered';
+  $subclass =~ s/^(?!IO::Pager::)/IO::Pager::/;
   eval "require $subclass" or die "Could not load $subclass: $@\n";
+  # Undefined subroutine &IO::Pager::Unbuffered::TIEHANDLE
+  #my $FH = wraptie($subclass, $_[0]);
   $subclass->new($out_fh, $subclass);
 }
 
@@ -64,8 +71,8 @@ IO::Pager - Select a pager and pipe text to it if destination is a TTY
 
   # Optionally, pipe output to it
   {
-    #local $STDOUT =     IO::Pager::open *STDOUT;
-    local  $STDOUT = new IO::Pager       *STDOUT;
+    #local $retval =     IO::Pager::open *STDOUT; #
+    local  $retval = new IO::Pager       *STDOUT, 'Buffered';
     print <<"  HEREDOC" ;
     ...
     A bunch of text later
@@ -83,6 +90,10 @@ or not to pipe a filehandle's output to a program specified in $PAGER.
 Subclasses are only required to support these filehandle methods:
 
 =over
+
+=item BINMODE
+
+Supports binmode() of the filehandle for I/O layer selection like UTF-8 encoding.
 
 =item CLOSE
 
@@ -133,8 +144,8 @@ An alias for new.
 =head2 close( FILEHANDLE )
 
 Explicitly close the filehandle, this stops any redirection of output
-on FILEHANDLE that may have been warranted. Normally you'd just wait for the
-object to pass out of scope.
+on FILEHANDLE that may have been warranted. Normally you'd just wait
+for the object to pass out of scope.
 
 I<This does not default to the current filehandle>.
 
@@ -210,7 +221,7 @@ L<IO::Page>, L<Meta::Tool::Less>
 
 Jerrad Pierce <jpierce@cpan.org>
 
-This module was forked from IO::Page 0.02 by Monte Mitzelfelt
+This module inspired by Monte Mitzelfelt's IO::Page 0.02
 
 =head1 LICENSE
 
