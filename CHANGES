@@ -4,6 +4,8 @@ Revision history for Perl extension IO::Pager.
 
       Doc clarifications, light refactoring, more error checks.
 
+      Do not run pager automatically when in Perl compile mode.
+
       Removed Perl warning 'Use of tie on a handle without * is deprecated'.
 
       Better handling of missing or wrongly set PAGER, and checking usual pagers

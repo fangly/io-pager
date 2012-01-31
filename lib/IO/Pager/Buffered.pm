@@ -36,13 +36,13 @@ sub TIEHANDLE {
   my ($class, $out_fh) = @_;
   if (not $PAGER) {
     my $class = __PACKAGE__;
-    die "The \$PAGER environment variable is not defined. Set it manually ".
+    die "The PAGER environment variable is not defined. Set it manually ".
       "or do 'use IO::Pager;' before 'use $class;' for it to be automagically ".
       "populated.\n";
   }
   my $tied_fh;
   unless (CORE::open($tied_fh, "| $PAGER")) {
-    $! = "Could not pipe to \$PAGER ('$PAGER'): $!\n";
+    $! = "Could not pipe to PAGER ('$PAGER'): $!\n";
     return 0;
   }
   my $self = bless {}, $class;
@@ -112,7 +112,7 @@ IO::Pager::Buffered - Pipe deferred output to a pager if destination is to a TTY
 =head1 DESCRIPTION
 
 IO::Pager is designed to programmatically decide whether or not to point
-the STDOUT file handle into a pipe to program specified in the $PAGER
+the STDOUT file handle into a pipe to program specified in the I<PAGER>
 environment variable or one of a standard list of pagers.
 
 This subclass buffers all output for display upon exiting the current scope.

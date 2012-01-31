@@ -2,7 +2,7 @@ package IO::Pager;
 
 use 5;
 use strict;
-use Env qw(PAGER);
+use Env qw( PAGER );
 use File::Spec;
 use IO::WrapTie;
 
@@ -10,7 +10,7 @@ our $VERSION = 0.10;
 
 
 BEGIN {
-  # Find a pager to use and set the $PAGER environment variable
+  # Find a pager to use and set the PAGER environment variable
   my $which = eval { require File::Which };
   my @pagers;
   push @pagers, $PAGER if $PAGER;
@@ -64,7 +64,7 @@ IO::Pager - Select a pager and pipe text to it if destination is a TTY
 
 =head1 SYNOPSIS
 
-  # Select an appropriate pager, set the $PAGER environment variable
+  # Select an appropriate pager and set the PAGER environment variable
   use IO::Pager;
 
   # Optionally, pipe output to it
@@ -80,11 +80,11 @@ IO::Pager - Select a pager and pipe text to it if destination is a TTY
 =head1 DESCRIPTION
 
 IO::Pager is a lightweight module to locate an available pager and set
-the $PAGER environment variable (see L</NOTES>). It is also a factory for
+the I<PAGER> environment variable (see L</NOTES>). It is also a factory for
 creating objects such as L<IO::Pager::Buffered> and L<IO::Pager::Unbuffered>.
 
 IO::Pager subclasses are designed to programmatically decide whether
-or not to pipe a filehandle's output to a program specified in $PAGER.
+or not to pipe a filehandle's output to a program specified in I<PAGER>.
 Subclasses are only required to support these filehandle methods:
 
 =over
@@ -167,7 +167,7 @@ See L</NOTES> for more information.
 
 =head1 FILES
 
-IO::Pager may fall back to these binaries in order if I<$PAGER> is not
+IO::Pager may fall back to these binaries in order if I<PAGER> is not
 executable.
 
 =over
@@ -188,9 +188,9 @@ The algorithm for determining which pager to use is as follows:
 
 =over
 
-=item 1. Defer to $PAGER
+=item 1. Defer to I<PAGER>
 
-If the $PAGER environment variable is set, use the pagger it identifies,
+If the I<PAGER> environment variable is set, use the pagger it identifies,
 unless this pager is not available.
 
 =item 2. Usual suspects
@@ -203,7 +203,7 @@ If File::Which is available check if C<less> or L<more> can be used.
 
 =item 4. more
 
-Set $PAGER to C<more>
+Set I<PAGER> to C<more>
 
 =back
 
