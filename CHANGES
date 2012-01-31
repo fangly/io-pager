@@ -1,8 +1,19 @@
 Revision history for Perl extension IO::Pager.
 
+0.xx 
+
+      Doc clarifications, light refactoring, more error checks.
+
+      Removed Perl warning 'Use of tie on a handle without * is deprecated'.
+
+      Better handling of missing or wrongly set PAGER, and checking usual pagers
+      after that.
+
+      No interactive questions during tests (bug# 66718).
+
 0.10 Unreleased
 
-      Added support for encodings via binmode().
+      Added support for encodings via binmode() (bug# 67930).
 
       Test: encoding, handle (glob, scalar, OO), interactive...
 
@@ -11,28 +22,29 @@ Revision history for Perl extension IO::Pager.
       Rewrote to support scalar filehandles per user request and IO::Handle
       style OO support came along for the ride.
 
-      * Fixed several mis-coded segments that did not affect operation
+      Fixed several mis-coded segments that did not affect operation.
 
       Added C<tell> in IO::Pager::Unbuffered to check size of buffered output.
 
       Pager open error now sets $! instead of issuing a warning, to more
       closely emulate the C<open> experience. Check the return value as before.
 
-      Neglected to update $VERSION in last release
+      Neglected to update $VERSION in last release.
 
-      Touched up documentation
+      Touched up the documentation.
 
 0.06 Wed Sep 21 2005
 
       Fixed a stupid leftover using =~ for assignment that some perls ignored
+      (bug# 14692).
 
-      Fixed other nits in t.pl and documentation
+      Fixed other nits in t.pl and documentation.
 
 0.05 Thu Jul 17 20:01:55 EDT 2003
 
-      Touched up documentation
+      Touched up documentation.
 
-      Added IO::Pager::Page, a clone of IO::Page "Broken pipe" foible and all
+      Added IO::Pager::Page, a clone of IO::Page "Broken pipe" foible and all.
 
       Fixed a bug in pager selection algorithm, it failed if you did not
       have File::Which. It is now back to being only strongly recommended as
@@ -40,18 +52,18 @@ Revision history for Perl extension IO::Pager.
 
 0.04 Wed Jul 16 18:53:58 EDT 2003
 
-      Removed a stupid debug message from IO::Pager::new
+      Removed a stupid debug message from IO::Pager::new.
 
-      Improved $ENV{PAGER} selection algorithm
+      Improved $ENV{PAGER} selection algorithm.
 
-      Touched up documentation
+      Touched up documentation.
 
-      Added some tests
+      Added some tests.
 
 0.03 Tue Jul 15 23:11:12 2003
 
-      Forked from IO::Page
+      Forked from IO::Page.
 
 0.02 Tue Jul 15 23:11:12 2003
 
-      original version; created by h2xs 1.22 with options -X -n IO::Pager
+      original version; created by h2xs 1.22 with options -X -n IO::Pager.
