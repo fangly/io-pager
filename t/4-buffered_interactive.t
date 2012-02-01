@@ -1,47 +1,36 @@
-# Before `make install' is performed this script should be runnable with
-# `make test'. After `make install' it should work as `perl 4.t'
-
-#########################
-
-# change 'tests => 1' to 'tests => last_test_to_print';
-
-use ExtUtils::MakeMaker qw(prompt);
-use Env qw(HARNESS_ACTIVE);
+use strict;
+use warnings;
 use Test::More;
-BEGIN { use_ok('IO::Pager') };
+use t::TestUtils;
+use ExtUtils::MakeMaker qw(prompt);
 
-#########################
-
-# Insert your test code below, the Test::More module is use()ed here so read
-# its man page ( perldoc Test::More ) for help writing this test script.
-
+# Test buffered paging
 
 SKIP: {
-  skip "Can not run with Test::Harness. Run 'perl -Mblib t.pl' after 'make test'.", 1
-    if $HARNESS_ACTIVE;
+  skip_interactive();
+
+  require IO::Pager;
   
-  diag(<<EOF
+  diag "\n".
+       "Reading is fun! Here's some text: ABCDEFGHIJKLMNOPQRSTUVWXYZ\n".
+       "This text should be displayed directly on screen, not within a pager.\n".
+       "\n";
 
-Here's some text. Reading is fun.  ABCDEFGHIJKLMNOPQRSTUVWXYZ
-You should not see this text from within a pager.
-
-EOF
-  );
-
-  select(STDERR);
-  my $A = prompt("\n\nWas that sent directly to your TTY? [Yn]");
-  ok( ($A =~ /^y(?:es)?/i || $A eq ''), 'diag works');
+  select STDERR;
+  my $A = prompt "\nWas the text displayed directly on screen? [Yn]";
+  ok is_yes($A), 'Diagnostic';
   
   {
     local $STDOUT = new IO::Pager *BOB, 'IO::Pager::Buffered';
     for (1..50) {
-      printf BOB "%06i Exit the pager when you have seen enough: press 'Q'.\n", $_;
+      printf BOB "%06i Printing text in a pager.\n", $_;
     }
+    printf BOB "End of text. Exit by pressing 'Q'.\n", $_;
     close BOB;
   }
 
-  $A = prompt("\n\nWas that sent to a pager? [Yn]");
-  ok( ($A =~ /^y(?:es)?/i || $A eq ''), 'IO::Pager::Buffered works');
+  $A = prompt "\nWas the text displayed in a pager? [Yn]";
+  ok is_yes($A), 'Buffered glob filehandle';
 }
 
 done_testing;

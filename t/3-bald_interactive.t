@@ -1,52 +1,40 @@
-# Before `make install' is performed this script should be runnable with
-# `make test'. After `make install' it should work as `perl 3.t'
-
-#########################
-
-# change 'tests => 1' to 'tests => last_test_to_print';
-
-use ExtUtils::MakeMaker qw(prompt);
-use Env qw(HARNESS_ACTIVE);
+use strict;
+use warnings;
 use Test::More;
-BEGIN { use_ok('IO::Pager') };
+use t::TestUtils;
+use ExtUtils::MakeMaker qw(prompt);
 
-#########################
-
-# Insert your test code below, the Test::More module is use()ed here so read
-# its man page ( perldoc Test::More ) for help writing this test script.
-
+# Test unbuffered paging
 
 SKIP: {
-  skip "Can not run with Test::Harness. Run 'perl -Mblib t.pl' after 'make test'.", 1
-    if $HARNESS_ACTIVE;
+  skip_interactive();
   
-  diag(<<EOF
+  require IO::Pager;
 
-Here's some text. Reading is fun.  ABCDEFGHIJKLMNOPQRSTUVWXYZ
-You should not see this text from within a pager.
+  diag "\n".
+       "Reading is fun! Here's some text: ABCDEFGHIJKLMNOPQRSTUVWXYZ\n".
+       "This text should be displayed directly on screen, not within a pager.\n".
+       "\n";
 
-EOF
-  );
-
-  select(STDERR);
-  my $A = prompt("\n\nWas that sent directly to your TTY? [Yn]");
-  ok( ($A =~ /^y(?:es)?/i || $A eq ''), 'Diagnostic');
+  select STDERR;
+  my $A = prompt "\nWas the text displayed directly on screen? [Yn]";
+  ok is_yes($A), 'Diagnostic';
 
   {
-    local $STDOUT = new IO::Pager *BOB;#, 'IO::Pager::Unbuffered';
+    local $STDOUT = new IO::Pager *BOB; # IO::Pager::Unbuffered by default
     eval {
-      my $i=0;
+      my $i = 0;
       $SIG{PIPE} = sub{ die };
       while (1) {
-        printf BOB "%06i Exit the pager when you have seen enough: press 'Q'.\n", $i++;
+        printf BOB "%06i Printing text in a pager. Exit at any time by pressing 'Q'.\n", $i++;
         sleep 1 unless $i%400;
       }
     };
-    close(BOB);
+    close BOB;
   }
 
-  $A = prompt("\n\nWas that sent to a pager? [Yn]");
-  ok( ($A =~ /^y(?:es)?/i || $A eq ''), 'Unbuffered glob filehandle');
+  $A = prompt "\nWas the text displayed in a pager? [Yn]";
+  ok is_yes($A), 'Unbuffered glob filehandle';
 }
 
 done_testing;

@@ -1,24 +1,33 @@
-use ExtUtils::MakeMaker qw(prompt);
-use Env qw(HARNESS_ACTIVE);
+use strict;
+use warnings;
 use Test::More;
-BEGIN { use_ok('IO::Pager') };
+use t::TestUtils;
+use ExtUtils::MakeMaker qw(prompt);
+
+# Test paging binary content
 
 SKIP: {
-  skip "Can not run with Test::Harness. Run 'perl -Mblib t.pl' after 'make test'.", 1
-    if $HARNESS_ACTIVE;
-  skip "Layers requires 5.8.0 or better", 1 if $] < 5.008;
+  skip_interactive();
+  skip_old_perl();
+
+  require IO::Pager;
 
   {
     local $STDOUT = new IO::Pager *BOB, 'IO::Pager::Buffered', ':utf8';
     for (1..50) {
-        printf BOB "%06i ATTN: Unicode<\x{17d}\x{13d}>\tExit your pager when done.\n", $_;
+      printf BOB "%06i ATTN: Unicode<\x{17d}\x{13d}>\n", $_;
     }
+    printf BOB "End of text. Exit by pressing 'Q'.\n", $_;
     close BOB;
   }
 
-  binmode(STDOUT, ":utf8");
-  $A = prompt("\n\n1) The block of text was sent to a pager\n2) You saw 'Unicode<\x{17d}\x{13d}>'\n3) There were no warnings about wide-characters\nWere the criteria above satisfied? [Yn]");
-  ok( ($A =~ /^y(?:es)?/i || $A eq ''), 'Binmode layer selection');
+  binmode STDOUT, ":utf8";
+  my $A = prompt "\n".
+                 "1) The block of text was sent to a pager\n".
+                 "2) You saw 'Unicode<\x{17d}\x{13d}>'\n".
+                 "3) There were no warnings about wide-characters\n".
+                 "Were all criteria above satisfied? [Yn]";
+  ok is_yes($A), 'Binmode layer selection';
 }
 
 done_testing;
