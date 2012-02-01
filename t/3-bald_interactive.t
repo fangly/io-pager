@@ -11,7 +11,7 @@ SKIP: {
   require IO::Pager;
 
   diag "\n".
-       "Reading is fun! Here's some text: ABCDEFGHIJKLMNOPQRSTUVWXYZ\n".
+       "Reading is fun! Here is some text: ABCDEFGHIJKLMNOPQRSTUVWXYZ\n".
        "This text should be displayed directly on screen, not within a pager.\n".
        "\n";
 
