@@ -11,9 +11,10 @@ SKIP: {
 
   require IO::Pager;
 
+  my $warnings;
   eval {
     # Promote warnings to errors so we can catch them
-    $SIG{__WARN__} = sub { die shift };
+    $SIG{__WARN__} = sub { $warnings .= shift };
 
     # Stream unicode in a pager
     local $STDOUT = new IO::Pager *BOB, 'IO::Pager::Buffered', ':utf8';
@@ -24,7 +25,7 @@ SKIP: {
     close BOB;
   };
 
-  is $@, '', 'Wide character warnings';
+  is $warnings, '', 'Wide character warnings';
 
   binmode STDOUT, ":utf8";
   my $A = prompt "\n".
