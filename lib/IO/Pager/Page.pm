@@ -58,13 +58,16 @@ from the user exiting the pager prematurely, load IO::Pager::Page like so:
 
 =head1 SEE ALSO
 
-L<IO::Page>, L<IO::Pager>, L<IO::Pager::Unbuffered>, L<IO::Pager::Buffered>
+L<IO::Page>, L<IO::Pager>, L<IO::Pager::Unbuffered>, L<IO::Pager::Buffered>,
+L<IO::Pager::TiedStream>
 
 =head1 AUTHOR
 
 Jerrad Pierce <jpierce@cpan.org>
 
 Florent Angly <florent.angly@gmail.com>
+
+This module inspired by Monte Mitzelfelt's IO::Page 0.02
 
 =head1 COPYRIGHT AND LICENSE
 

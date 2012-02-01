@@ -2,8 +2,7 @@ package IO::Pager::Unbuffered;
 
 use 5;
 use strict;
-use Env qw( PAGER );
-use base qw( Tie::Handle );
+use IO::Pager::TiedStream;
 
 our $VERSION = 0.10;
 
@@ -13,70 +12,30 @@ sub new(;$) {
   no strict 'refs';
   $out_fh ||= *{select()};
   # STDOUT & STDERR are separately bound to tty
-  if( defined( my $FHn = fileno($out_fh) ) ){
-    if( $FHn == fileno(STDOUT) ){
+  if ( defined( my $FHn = fileno($out_fh) ) ) {
+    if ( $FHn == fileno(STDOUT) ) {
       return 0 unless -t $out_fh;
     }
-    if( $FHn == fileno(STDERR) ){
+    if ( $FHn == fileno(STDERR) ) {
       return 0 unless -t $out_fh;
     }
   }
   # This allows us to have multiple pseudo-STDOUT
   return 0 unless -t STDOUT;
-  tie *$out_fh, $class, $out_fh or die "Could not tie $$out_fh\n";
+  my $buffered = 0;
+  tie *$out_fh, 'IO::Pager::TiedStream', $out_fh, $buffered
+    or die "Could not tie $$out_fh\n";
 }
+
 
 sub open(;$) {
   my ($out_fh) = @_;
   new IO::Pager::Unbuffered $out_fh;
 }
 
-sub TIEHANDLE {
-  my ($class, $out_fh) = @_;
-  if (not $PAGER) {
-    my $class = __PACKAGE__;
-    die "The PAGER environment variable is not defined. Set it manually ".
-      "or do 'use IO::Pager;' before 'use $class;' for it to be automagically ".
-      "populated.\n";
-  }
-  my $tied_fh;
-  unless (CORE::open($tied_fh, "| $PAGER")) {
-    $! = "Could not pipe to PAGER ('$PAGER'): $!\n";
-    return 0;
-  }
-  my $self = bless {}, $class;
-  $self->{out_fh}  = $out_fh;
-  $self->{tied_fh} = $tied_fh;
-  return $self;
-}
-
-sub BINMODE {
-  my ($self, @args) = @_;
-  binmode($self->{tied_fh}, @args);
-}
-
-sub PRINT {
-  my ($self, @args) = @_;
-  CORE::print {$self->{tied_fh}} @args or die "Could not print on tied filehandle\n$!\n";
-}
-
-sub PRINTF {
-  my ($self, $format, @args) = @_;
-  PRINT $self, sprintf($format, @args);
-}
-
-sub WRITE {
-  my ($self, $scalar, $length, $offset) = @_;
-  PRINT $self, substr($scalar, $offset||0, $length);
-}
-
-sub CLOSE {
-  my ($self) = @_;
-  untie *{$self->{out_fh}};
-  close $self->{tied_fh};
-}
 
 1;
+
 
 __END__
 
@@ -144,7 +103,8 @@ You probably want to do something with SIGPIPE eg;
 
 =head1 SEE ALSO
 
-L<IO::Pager>, L<IO::Pager::Buffered>, L<IO::Pager::Page>
+L<IO::Pager>, L<IO::Pager::Buffered>, L<IO::Pager::Page>,
+L<IO::Pager::TiedStream>
 
 =head1 AUTHOR
 
@@ -152,7 +112,7 @@ Jerrad Pierce <jpierce@cpan.org>
 
 Florent Angly <florent.angly@gmail.com>
 
-This module inspired by Monte Mitzelfelt's IO::Page 0.02
+This module was inspired by Monte Mitzelfelt's IO::Page 0.02
 
 Significant proddage provided by Tye McQueen.
 

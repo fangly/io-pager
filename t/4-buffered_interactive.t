@@ -22,7 +22,7 @@ SKIP: {
   {
     local $STDOUT = new IO::Pager *BOB, 'IO::Pager::Buffered';
 
-    isa_ok $STDOUT, 'IO::Pager::Buffered';
+    isa_ok $STDOUT, 'IO::Pager::TiedStream';
     isa_ok $STDOUT, 'Tie::Handle';
 
     for (1..50) {
