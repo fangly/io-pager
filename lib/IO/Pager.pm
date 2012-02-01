@@ -13,7 +13,7 @@ sub _find_pager {
   # Return the name (or path) of a pager that IO::Pager can use
   my $io_pager;
 
-  # Use File::Which if available (strongly 
+  # Use File::Which if available (strongly recommended)
   my $which = eval { require File::Which };
 
   # Look for pager in PAGER first
