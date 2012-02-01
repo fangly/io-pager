@@ -31,7 +31,7 @@ sub _find_pager {
 
   # Then try for common pagers in more exotic places
   if ( (not defined $io_pager) && $which ) {
-    my @pagers = ['less', 'more'];
+    my @pagers = ['less', 'most', 'w3m', 'more'];
     $io_pager = _check_pagers(\@pagers, $which );
   }
 
@@ -235,7 +235,8 @@ Try the standard, hardcoded paths in L</FILES>.
 
 =item 3. File::Which
 
-If File::Which is available check if C<less> or L<more> can be used.
+If File::Which is available check if C<less>, C<most>, C<w3m> or L<more> can
+be used.
 
 =item 4. more
 
