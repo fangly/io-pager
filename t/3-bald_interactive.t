@@ -21,6 +21,10 @@ SKIP: {
 
   {
     local $STDOUT = new IO::Pager *BOB; # IO::Pager::Unbuffered by default
+
+    isa_ok $STDOUT, 'IO::Pager::Unbuffered';
+    isa_ok $STDOUT, 'Tie::Handle';
+
     eval {
       my $i = 0;
       $SIG{PIPE} = sub{ die };

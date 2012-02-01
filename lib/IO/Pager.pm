@@ -4,7 +4,7 @@ use 5;
 use strict;
 use Env qw( PAGER );
 use File::Spec;
-use IO::WrapTie;
+###use IO::WrapTie;
 
 our $VERSION = 0.10;
 
@@ -84,7 +84,7 @@ sub open(;$$) {
   $subclass =~ s/^(?!IO::Pager::)/IO::Pager::/;
   eval "require $subclass" or die "Could not load $subclass: $@\n";
   # Undefined subroutine &IO::Pager::Unbuffered::TIEHANDLE
-  #my $FH = wraptie($subclass, $_[0]);
+  ###my $FH = wraptie($subclass, $_[0]);
   $subclass->new($out_fh, $subclass);
 }
 

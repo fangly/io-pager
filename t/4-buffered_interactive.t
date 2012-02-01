@@ -21,6 +21,10 @@ SKIP: {
   
   {
     local $STDOUT = new IO::Pager *BOB, 'IO::Pager::Buffered';
+
+    isa_ok $STDOUT, 'IO::Pager::Buffered';
+    isa_ok $STDOUT, 'Tie::Handle';
+
     for (1..50) {
       printf BOB "%06i Printing text in a pager.\n", $_;
     }

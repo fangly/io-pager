@@ -6,6 +6,9 @@ WriteMakefile(
     'VERSION_FROM'      => 'lib/IO/Pager.pm', # finds $VERSION
     'BUILD_REQUIRES'    => {
        'Test::More'     => 0,
+       'Config'         => 0,
+       'Env'            => 0,
+       'Exporter'       => 0,
     },
     'PREREQ_PM'         => {
        'Env'            => 0,
