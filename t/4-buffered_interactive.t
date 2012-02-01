@@ -2,7 +2,6 @@ use strict;
 use warnings;
 use Test::More;
 use t::TestUtils;
-use ExtUtils::MakeMaker qw(prompt);
 
 # Test buffered paging
 

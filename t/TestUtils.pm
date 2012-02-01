@@ -2,17 +2,21 @@ package t::TestUtils;
 
 use strict;
 use warnings;
+use Config;
 use Test::More;
+use Env qw( HARNESS_ACTIVE );
+use ExtUtils::MakeMaker qw( prompt );
 
-use Env qw(PAGER HARNESS_ACTIVE);
-
-use vars qw{@ISA @EXPORT};
+use base qw( Exporter );
+our @EXPORT;
 BEGIN {
-   @ISA     = 'Exporter';
    @EXPORT  = qw{
       skip_interactive
       skip_old_perl
       is_yes
+      perl_exe
+      perl_path
+      prompt
    };
 }
 
@@ -27,6 +31,23 @@ sub skip_old_perl {
 sub is_yes {
   my ($val) = @_;
   return ($val =~ /^y(?:es)?/i || $val eq '');
+}
+
+sub perl_exe {
+  # Find the Perl executable name
+  my $this_perl = $^X;
+  $this_perl = (File::Spec->splitpath( $this_perl ))[-1];
+  return $this_perl;
+}
+
+sub perl_path {
+  # Find the Perl full-path (taken from the perlvar documentation)
+  my $this_perl = $^X;
+  if ($^O ne 'VMS') {
+    $this_perl .= $Config{_exe}
+    unless $this_perl =~ m/$Config{_exe}$/i;
+  }
+  return $this_perl;
 }
 
 1;

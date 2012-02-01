@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use Test::More;
 use t::TestUtils;
-use ExtUtils::MakeMaker qw(prompt);
+use Env qw( PAGER );
 
 # Test that a reasonable pager can be found
 
