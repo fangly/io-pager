@@ -4,7 +4,6 @@ use 5;
 use strict;
 use Env qw( PAGER );
 use File::Spec;
-###use IO::WrapTie;
 
 our $VERSION = 0.10;
 
@@ -45,7 +44,7 @@ sub _find_pager {
 sub _check_pagers {
   my ($pagers, $which) = @_;
   # Return the first pager in the list that is usable. For each given pager, 
-  # given a pager name, try to finds its full path with File::Which if requested.
+  # given a pager name, try to finds its full path with File::Which if possible.
   # Given a pager path, verify that it exists.
   my $io_pager = undef;
   for my $pager (@$pagers) {
@@ -83,8 +82,6 @@ sub open(;$$) {
   $subclass ||= 'IO::Pager::Unbuffered';
   $subclass =~ s/^(?!IO::Pager::)/IO::Pager::/;
   eval "require $subclass" or die "Could not load $subclass: $@\n";
-  # Undefined subroutine &IO::Pager::Unbuffered::TIEHANDLE
-  ###my $FH = wraptie($subclass, $_[0]);
   $subclass->new($out_fh, $subclass);
 }
 
@@ -105,7 +102,7 @@ IO::Pager - Select a pager and pipe text to it if destination is a TTY
 
   # Optionally, pipe output to it
   {
-    #local $retval =     IO::Pager::open *STDOUT; #
+    #local $retval =     IO::Pager::open *STDOUT; # Defaults to 'Unbuffered'
     local  $retval = new IO::Pager       *STDOUT, 'Buffered';
     print <<"  HEREDOC" ;
     ...
