@@ -9,34 +9,68 @@ use IO::WrapTie;
 our $VERSION = 0.10;
 
 
-BEGIN {
-  # Find a pager to use and set the PAGER environment variable
+sub _find_pager {
+  # Return the name (or path) of a pager that IO::Pager can use
+  my $io_pager;
+
+  # Use File::Which if available (strongly 
   my $which = eval { require File::Which };
-  my @pagers;
-  push @pagers, $PAGER if $PAGER;
-  push @pagers, '/usr/local/bin/less', '/usr/bin/less', '/usr/bin/more';
-  push @pagers, 'less', 'more' if $which;
-  LOOP: for my $pager (@pagers) {
-    # Find the full path of the pager if needed
-    my @locs;
+
+  # Look for pager in PAGER first
+  if ($PAGER) {
+    my ($pager, @options) = (split ' ', $PAGER); # Handle flags, e.g. 'less --quiet'
+    $pager = _check_pagers([$pager], $which);
+    $io_pager = join ' ', ($pager, @options) if defined $pager;
+  }
+
+  # Then search pager amongst usual suspects
+  if (not defined $io_pager) {
+    my @pagers = ('/usr/local/bin/less', '/usr/bin/less', '/usr/bin/more');
+    $io_pager = _check_pagers(\@pagers, $which) 
+  }
+
+  # Then try for common pagers in more exotic places
+  if ( (not defined $io_pager) && $which ) {
+    my @pagers = ['less', 'more'];
+    $io_pager = _check_pagers(\@pagers, $which );
+  }
+
+  # If all else failed, default to more
+  $io_pager ||= 'more';
+
+  return $io_pager;
+}
+
+
+sub _check_pagers {
+  my ($pagers, $which) = @_;
+  # Return the first pager in the list that is usable. For each given pager, 
+  # given a pager name, try to finds its full path with File::Which if requested.
+  # Given a pager path, verify that it exists.
+  my $io_pager = undef;
+  for my $pager (@$pagers) {
+    # Get full path
+    my $loc;
     if ( $which && (not File::Spec->file_name_is_absolute($pager)) ) {
-      @locs = File::Which::where($pager);
-      next if scalar @locs == 0;
+      $loc = File::Which::which($pager);
     } else {
-      @locs = ($pager);
+      $loc = $pager;
     }
-    # Some platforms don't do -x so we use -e
-    for my $loc (@locs) {
-      if (-e $loc) {
-        # Found a suitable pager
-        $PAGER = $loc;
-        last LOOP;
-      }
+    # Test that full path is valid (some platforms don't do -x so we use -e)
+    if ( defined($loc) && (-e $loc) ) {
+      $io_pager = $loc;
+      last;
     }
   }
-  # If all else failed, default to more
-  $PAGER ||= 'more';
+  return $io_pager;
 }
+
+
+BEGIN {
+  # Set the PAGER environment variable to something reasonable
+  $PAGER = _find_pager();
+}
+
 
 sub new(;$$) {
   my ($class, $out_fh, $subclass) = @_;
@@ -54,7 +88,9 @@ sub open(;$$) {
   $subclass->new($out_fh, $subclass);
 }
 
+
 1;
+
 
 __END__
 
