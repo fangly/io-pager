@@ -48,7 +48,6 @@ sub TIEHANDLE {
   $self->{out_fh}  = $out_fh;
   $self->{tied_fh} = $tied_fh;
   $self->{buffer}  = '';
-  $self->{closed}  = 0;
   return $self;
 }
 
@@ -70,7 +69,6 @@ sub PRINTF {
 sub TELL {
   # Return how big the buffer is
   my ($self) = @_;
-  #XXX $[
   return bytes::length($self->{buffer});
 }
 
@@ -81,7 +79,6 @@ sub WRITE {
 
 sub CLOSE {
   my ($self) = @_;
-  # return if $self->{closed}++; ### ?
   untie *{$self->{out_fh}};
   CORE::print {$self->{tied_fh}} $self->{buffer}
     or die "Could not print on tied filehandle\n$!\n";

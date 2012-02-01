@@ -47,7 +47,6 @@ sub TIEHANDLE {
   my $self = bless {}, $class;
   $self->{out_fh}  = $out_fh;
   $self->{tied_fh} = $tied_fh;
-  $self->{closed}  = 0;
   return $self;
 }
 
@@ -73,7 +72,6 @@ sub WRITE {
 
 sub CLOSE {
   my ($self) = @_;
-  # return if $self->{closed}++; ### ?
   untie *{$self->{out_fh}};
   close $self->{tied_fh};
 }
