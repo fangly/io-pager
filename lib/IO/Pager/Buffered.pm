@@ -3,7 +3,6 @@ package IO::Pager::Buffered;
 use 5;
 use strict;
 use Env qw( PAGER );
-use Tie::Handle;
 use base qw( Tie::Handle );
 
 our $VERSION = 0.10;
