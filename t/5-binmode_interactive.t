@@ -17,7 +17,8 @@ SKIP: {
     $SIG{__WARN__} = sub { $warnings .= shift };
 
     # Stream unicode in a pager
-    local $STDOUT = new IO::Pager *BOB, 'IO::Pager::Buffered', ':utf8';
+    local $STDOUT = new IO::Pager *BOB, 'IO::Pager::Buffered';
+    binmode BOB, ":utf8";
     for (1..50) {
       printf BOB "%06i ATTN: Unicode<\x{17d}\x{13d}>\n", $_;
     }
@@ -25,7 +26,7 @@ SKIP: {
     close BOB;
   };
 
-  is $warnings, '', 'Wide character warnings';
+  is $warnings, undef, 'Wide character warnings';
 
   binmode STDOUT, ":utf8";
   my $A = prompt "\n".

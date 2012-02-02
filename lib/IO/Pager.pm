@@ -90,12 +90,11 @@ sub open(;$$) {
 
 sub TIEHANDLE {
   my ($class, $out_fh) = @_;
-  if (not $PAGER) {
-    die "The PAGER environment variable is not defined. Set it manually ".
-      "or do 'use IO::Pager;' for it to be automagically populated.\n";
+  unless ( $PAGER ){
+    die "The PAGER environment variable is not defined, you may need to set it manually.";
   }
   my($tied_fh, $child);
-  unless ( $child = CORE::open($tied_fh, "| $PAGER")) {
+  unless ( $child = CORE::open($tied_fh, "| $PAGER") ){
     $! = "Could not pipe to PAGER ('$PAGER'): $!\n";
     return 0;
   }
@@ -113,14 +112,14 @@ sub TIEHANDLE {
 
 
 sub BINMODE {
-  my ($self, @args) = @_;
-  binmode($self->{tied_fh}, @args);
+  my ($self, $layer) = @_;
+  CORE::binmode($self->{tied_fh}, $layer||':raw');
 }
 
 
 sub PRINT {
   my ($self, @args) = @_;
-  print {$self->{tied_fh}} @args or die "Could not print on tied filehandle\n$!\n";
+  CORE::print {$self->{tied_fh}} @args or die "Could not print on tied filehandle\n$!\n";
 }
 
 
@@ -139,7 +138,7 @@ sub WRITE {
 sub CLOSE {
   my ($self) = @_;
   untie *{$self->{out_fh}};
-  close $self->{tied_fh};
+  CORE::close $self->{tied_fh};
 }
 
 
