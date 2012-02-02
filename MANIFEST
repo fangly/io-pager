@@ -8,7 +8,12 @@ lib/IO/Pager/Unbuffered.pm
 README
 TODO
 t.pl
-t/1.t
-t/2.t
-t/3.t
-t/4.t
+t/1-load.t
+t/2-which_interactive.t
+t/3-bald_interactive.t
+t/4-buffered_interactive.t
+t/5-binmode_interactive.t
+t/6-pager.t
+
+
+

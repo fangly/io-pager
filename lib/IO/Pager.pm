@@ -1,9 +1,10 @@
 package IO::Pager;
 
-use 5;
+use 5.008; #At least, for decent perlio, and other modernisms
 use strict;
 use Env qw( PAGER );
 use File::Spec;
+use base qw( Tie::Handle );
 
 our $VERSION = 0.10;
 
@@ -17,7 +18,8 @@ sub _find_pager {
 
   # Look for pager in PAGER first
   if ($PAGER) {
-    my ($pager, @options) = (split ' ', $PAGER); # Handle flags, e.g. 'less --quiet'
+    # Strip arguments e.g. 'less --quiet'
+    my ($pager, @options) = (split ' ', $PAGER);
     $pager = _check_pagers([$pager], $which);
     $io_pager = join ' ', ($pager, @options) if defined $pager;
   }
@@ -34,7 +36,7 @@ sub _find_pager {
     $io_pager = _check_pagers(\@pagers, $which );
   }
 
-  # If all else failed, default to more
+  # If all else fails, default to more
   $io_pager ||= 'more';
 
   return $io_pager;
@@ -86,8 +88,61 @@ sub open(;$$) {
 }
 
 
-1;
+sub TIEHANDLE {
+  my ($class, $out_fh) = @_;
+  if (not $PAGER) {
+    die "The PAGER environment variable is not defined. Set it manually ".
+      "or do 'use IO::Pager;' for it to be automagically populated.\n";
+  }
+  my $tied_fh;
+  unless (CORE::open($tied_fh, "| $PAGER")) {
+    $! = "Could not pipe to PAGER ('$PAGER'): $!\n";
+    return 0;
+  }
+  my $self = bless {}, $class;
+  $self->{out_fh}  = $out_fh;
+  $self->{tied_fh} = $tied_fh;
+  return $self;
+}
 
+
+#sub OPEN{
+#  
+#}
+
+
+sub BINMODE {
+  my ($self, @args) = @_;
+  binmode $self->{tied_fh}, @args;
+}
+
+
+sub PRINT {
+  my ($self, @args) = @_;
+  CORE::print {$self->{tied_fh}} @args or die "Could not print on tied filehandle\n$!\n";
+}
+
+
+sub PRINTF {
+  my ($self, $format, @args) = @_;
+  PRINT $self, sprintf($format, @args);
+}
+
+
+sub WRITE {
+  my ($self, $scalar, $length, $offset) = @_;
+  PRINT $self, substr($scalar, $offset||0, $length);
+}
+
+
+sub CLOSE {
+  my ($self) = @_;
+  untie *{$self->{out_fh}};
+  close $self->{tied_fh};
+}
+
+
+1;
 
 __END__
 
@@ -232,12 +287,12 @@ Try the standard, hardcoded paths in L</FILES>.
 
 =item 3. File::Which
 
-If File::Which is available check if C<less>, C<most>, C<w3m> or L<more> can
-be used.
+If File::Which is available check if C<less>, C<most>, C<w3m> or L<more>,
+in that order.
 
 =item 4. more
 
-Set I<PAGER> to C<more>
+Set I<PAGER> to C<more>, and cross our fingers.
 
 =back
 
@@ -246,7 +301,6 @@ Steps 1, 3 and 4 rely upon the I<PATH> environment variable.
 =head1 SEE ALSO
 
 L<IO::Pager::Buffered>, L<IO::Pager::Unbuffered>, L<IO::Pager::Page>,
-L<IO::Pager::TiedStream>
 
 L<IO::Page>, L<Meta::Tool::Less>
 

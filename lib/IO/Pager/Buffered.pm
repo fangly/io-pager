@@ -2,7 +2,7 @@ package IO::Pager::Buffered;
 
 use 5;
 use strict;
-use IO::Pager::TiedStream;
+use base qw( IO::Pager );
 
 our $VERSION = 0.10;
 
@@ -22,8 +22,7 @@ sub new(;$) {
   }
   # This allows us to have multiple pseudo-STDOUT
   return 0 unless -t STDOUT;
-  my $buffered = 1;
-  tie *$out_fh, 'IO::Pager::TiedStream', $out_fh, $buffered
+  tie *$out_fh, $class, $out_fh
     or die "Could not tie $$out_fh\n";
 }
 
@@ -31,6 +30,28 @@ sub open(;$) {
   my ($out_fh) = @_;
   new IO::Pager::Buffered $out_fh;
 }
+
+
+sub PRINT {
+  my ($self, @args) = @_;
+    $self->{buffer} .= join($,||'', @args);
+}
+
+
+sub CLOSE {
+  my ($self) = @_;
+  $self->SUPER::PRINT($self->{buffer}) if exists $self->{buffer};
+  untie *{$self->{out_fh}};
+  close $self->{tied_fh};
+}
+
+
+sub TELL {
+  # Return how big the buffer is
+  my ($self) = @_;
+  return exists($self->{buffer}) ? bytes::length($self->{buffer}) : 0;
+}
+
 
 1;
 
@@ -93,6 +114,10 @@ the object to pass out of scope.
 
 I<This does not default to the current filehandle>.
 
+=head2 tell( FILEHANDLE )
+
+Returns the size of the buffer in bytes.
+
 =head1 CAVEATS
 
 If you mix buffered and unbuffered operations the output order is unspecified,
@@ -103,7 +128,6 @@ I<$,> is used see L<perlvar>.
 =head1 SEE ALSO
 
 L<IO::Pager>, L<IO::Pager::Unbuffered>, L<IO::Pager::Page>,
-L<IO::Pager::TiedStream>
 
 =head1 AUTHOR
 

@@ -2,7 +2,7 @@ package IO::Pager::Unbuffered;
 
 use 5;
 use strict;
-use IO::Pager::TiedStream;
+use base qw( IO::Pager );
 
 our $VERSION = 0.10;
 
@@ -22,8 +22,7 @@ sub new(;$) {
   }
   # This allows us to have multiple pseudo-STDOUT
   return 0 unless -t STDOUT;
-  my $buffered = 0;
-  tie *$out_fh, 'IO::Pager::TiedStream', $out_fh, $buffered
+  tie *$out_fh, $class, $out_fh
     or die "Could not tie $$out_fh\n";
 }
 
@@ -104,7 +103,6 @@ You probably want to do something with SIGPIPE eg;
 =head1 SEE ALSO
 
 L<IO::Pager>, L<IO::Pager::Buffered>, L<IO::Pager::Page>,
-L<IO::Pager::TiedStream>
 
 =head1 AUTHOR
 
