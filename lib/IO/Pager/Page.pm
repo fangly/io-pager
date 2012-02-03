@@ -58,8 +58,7 @@ from the user exiting the pager prematurely, load IO::Pager::Page like so:
 
 =head1 SEE ALSO
 
-L<IO::Page>, L<IO::Pager>, L<IO::Pager::Unbuffered>, L<IO::Pager::Buffered>,
-L<IO::Pager::TiedStream>
+L<IO::Page>, L<IO::Pager>, L<IO::Pager::Unbuffered>, L<IO::Pager::Buffered>
 
 =head1 AUTHOR
 

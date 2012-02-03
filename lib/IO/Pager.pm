@@ -291,8 +291,8 @@ Try the standard, hardcoded paths in L</FILES>.
 
 =item 3. File::Which
 
-If File::Which is available check if C<less>, C<most>, C<w3m> or L<more>,
-in that order.
+If File::Which is available, use the first pager possible amongst C<less>,
+C<most>, C<w3m> and L<more>.
 
 =item 4. more
 
