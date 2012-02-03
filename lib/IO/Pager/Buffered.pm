@@ -42,9 +42,9 @@ sub PRINT {
 
 sub CLOSE {
   my ($self) = @_;
-  $self->SUPER::PRINT($self->{buffer}) if exists $self->{buffer};
-  untie *{$self->{out_fh}};
-  close $self->{tied_fh};
+  # Print buffer and close using IO::Pager's methods
+  $self->SUPER::PRINT($self->{buffer}) if defined $self->{buffer};
+  $self->SUPER::CLOSE();
 }
 
 
