@@ -183,7 +183,12 @@ Subclasses are only required to support these filehandle methods:
 
 =item BINMODE
 
-Supports binmode() of the filehandle for I/O layer selection like UTF-8 encoding.
+Supports binmode() of the filehandle for I/O layer selection. For example, 
+for UTF-8 encoding:
+
+  $retval = new IO::Pager *STDOUT;
+  binmode STDOUT, ":utf8";
+  print STDOUT "Unicode<\x{17d}\x{13d}>\n";
 
 =item CLOSE
 
