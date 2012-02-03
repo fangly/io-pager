@@ -26,6 +26,7 @@ sub new(;$) {
     or die "Could not tie $$out_fh\n";
 }
 
+
 sub open(;$) {
   my ($out_fh) = @_;
   new IO::Pager::Buffered $out_fh;
@@ -34,7 +35,7 @@ sub open(;$) {
 
 sub PRINT {
   my ($self, @args) = @_;
-    $self->{buffer} .= join($,||'', @args);
+  $self->{buffer} .= join($,||'', @args);
 }
 
 

@@ -99,10 +99,10 @@ sub TIEHANDLE {
     return 0;
   }
   return bless {
-		'out_fh'  => $out_fh,
-		'tied_fh' => $tied_fh,
-		'child'   => $child
-	       }, $class;
+                'out_fh'  => $out_fh,
+                'tied_fh' => $tied_fh,
+                'child'   => $child
+               }, $class;
 }
 
 
