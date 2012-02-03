@@ -11,8 +11,10 @@ WriteMakefile(
        'Exporter'       => 0,
     },
     'PREREQ_PM'         => {
+       'base'           => 0,
        'Env'            => 0,
        'File::Spec'     => 0,
+       'Symbol'         => 0,
        'Tie::Handle'    => 0,
     },
     'META_MERGE' => { recommends => {

@@ -42,7 +42,7 @@ sub CLOSE {
   my ($self) = @_;
   $self->SUPER::PRINT($self->{buffer}) if exists $self->{buffer};
   untie *{$self->{out_fh}};
-  close $self->{tied_fh};
+  CORE::close $self->{tied_fh};
 }
 
 

@@ -4,12 +4,13 @@ use 5.008; #At least, for decent perlio, and other modernisms
 use strict;
 use Env qw( PAGER );
 use File::Spec;
+use Symbol;
 use base qw( Tie::Handle );
 
 our $VERSION = 0.10;
 
 
-sub _find_pager {
+sub find_pager {
   # Return the name (or path) of a pager that IO::Pager can use
   my $io_pager;
 
@@ -69,7 +70,7 @@ sub _check_pagers {
 
 BEGIN {
   # Set the PAGER environment variable to something reasonable
-  $PAGER = _find_pager();
+  $PAGER = find_pager();
 }
 
 
@@ -87,6 +88,9 @@ sub open(;$$) {
   $subclass->new($out_fh, $subclass);
 }
 
+#sub OPEN{
+#  
+#}
 
 sub TIEHANDLE {
   my ($class, $out_fh) = @_;
@@ -104,11 +108,6 @@ sub TIEHANDLE {
 		'child'   => $child
 	       }, $class;
 }
-
-
-#sub OPEN{
-#  
-#}
 
 
 sub BINMODE {
@@ -141,7 +140,6 @@ sub CLOSE {
   CORE::close $self->{tied_fh};
 }
 
-
 1;
 
 __END__
@@ -167,19 +165,21 @@ IO::Pager - Select a pager and pipe text to it if destination is a TTY
 
 =head1 DESCRIPTION
 
-IO::Pager is a lightweight module to locate an available pager and set
-the I<PAGER> environment variable (see L</NOTES>). It is also a factory for
-creating objects such as L<IO::Pager::Buffered> and L<IO::Pager::Unbuffered>.
+IO::Pager can be used to locate an available pager and set the I<PAGER>
+environment variable (see L</NOTES>). It is also a factory for creating
+I/O objects such as L<IO::Pager::Buffered> and L<IO::Pager::Unbuffered>.
 
 IO::Pager subclasses are designed to programmatically decide whether
 or not to pipe a filehandle's output to a program specified in I<PAGER>.
-Subclasses are only required to support these filehandle methods:
+Subclasses may implement only the IO handle methods desired and inherit
+the following from IO::Pager:
 
 =over
 
 =item BINMODE
 
-Supports binmode() of the filehandle for I/O layer selection like UTF-8 encoding.
+Used to set the I/O layer a.ka. discipline of a filehandle,
+such as C<':utf8'> for UTF-8 encoding.
 
 =item CLOSE
 

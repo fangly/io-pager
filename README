@@ -1,4 +1,4 @@
-IO::Pager version 0.10
+IO::Pager version 0.16
 =====================
 
 IO::Pager - Select a pager and pipe text to it if destination is a TTY
@@ -10,8 +10,8 @@ objects defined elsewhere such as IO::Pager::Buffered and IO::Pager::Unbuffered.
 
 IO::Pager subclasses are designed to programmatically decide whether
 or not to pipe a filehandle's output to a program specified in PAGER.
-Subclasses are only required to support filehandle output methods print(),
-printf(), write() and close().
+Subclasses may inherit from IO::Pager, and imlpement the IO handle
+methods desired.
 
 
 INSTALLATION
@@ -28,13 +28,13 @@ To install this module type the following:
 
 DEPENDENCIES
 
-Env         this is a required core module.
-Test::More  this is a required core module.
-File::Spec  this is a required core module.
-Tie::Handle this is a required core module.
-File::Which this is a *strongly* recommended core module.
+Multiple core modules are used: base, Env, File::Spec, Symbol, Tie::Handle
 
-PORTABLE
+File::Which (part of the modern core) is strongly recommended
+
+Test::More is used during the installation procedure.
+
+PORTABILITY
 
 IO::Pager is intended to be as portable as possible, I've tested it on numerous
 platform and perl version combinations. Most work fine though you may run
