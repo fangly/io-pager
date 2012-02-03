@@ -132,10 +132,15 @@ sub WRITE {
 }
 
 
+sub UNTIE {
+  my ($self) = @_;
+  CORE::close($self->{tied_fh});
+}
+
+
 sub CLOSE {
   my ($self) = @_;
   untie *{$self->{out_fh}};
-  CORE::close $self->{tied_fh};
 }
 
 
