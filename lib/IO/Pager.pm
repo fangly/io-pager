@@ -88,6 +88,8 @@ sub open(;$$) {
 }
 
 
+# Methods required for implementing a tied filehandle class
+
 sub TIEHANDLE {
   my ($class, $out_fh) = @_;
   unless ( $PAGER ){
@@ -104,11 +106,6 @@ sub TIEHANDLE {
                 'child'   => $child
                }, $class;
 }
-
-
-#sub OPEN{
-#  
-#}
 
 
 sub BINMODE {
@@ -139,6 +136,13 @@ sub CLOSE {
   my ($self) = @_;
   untie *{$self->{out_fh}};
   CORE::close $self->{tied_fh};
+}
+
+
+sub TELL {
+  # Return how big the buffer is
+  my ($self) = @_;
+  return exists($self->{buffer}) ? bytes::length($self->{buffer}) : 0;
 }
 
 

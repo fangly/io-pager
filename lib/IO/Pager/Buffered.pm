@@ -33,6 +33,8 @@ sub open(;$) {
 }
 
 
+# Overload IO::Pager methods
+
 sub PRINT {
   my ($self, @args) = @_;
   $self->{buffer} .= join($,||'', @args);
