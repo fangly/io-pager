@@ -19,20 +19,17 @@ SKIP: {
     # Stream unicode in a pager
     local $STDOUT = new IO::Pager *BOB, 'IO::Pager::Buffered';
     binmode BOB, ":utf8";
-    for (1..50) {
+    for (1..30) {
       printf BOB "%06i ATTN: Unicode<\x{17d}\x{13d}>\n", $_;
     }
     printf BOB "End of text. Exit by pressing 'Q'.\n", $_;
     close BOB;
   };
 
-  is $warnings, undef, 'Wide character warnings';
+  is $warnings, undef, 'No wide character warnings';
 
   binmode STDOUT, ":utf8";
-  my $A = prompt "\n".
-                 "1) The block of text was sent to a pager\n".
-                 "2) You saw 'Unicode<\x{17d}\x{13d}>'\n".
-                 "Were all criteria above satisfied? [Yn]";
+  my $A = prompt "\nWas text containing 'Unicode<\x{17d}\x{13d}>' displayed in a pager? [Yn]";
   ok is_yes($A), 'Binmode layer selection';
 }
 
