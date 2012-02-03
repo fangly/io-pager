@@ -1,6 +1,5 @@
 package IO::Pager::Page;
 
-use 5;
 use strict;
 
 our $VERSION = 0.10;

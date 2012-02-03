@@ -1,6 +1,5 @@
 package IO::Pager::Unbuffered;
 
-use 5;
 use strict;
 use base qw( IO::Pager );
 
