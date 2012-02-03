@@ -43,7 +43,7 @@ sub PRINT {
 sub CLOSE {
   my ($self) = @_;
   # Print buffer and close using IO::Pager's methods
-  $self->SUPER::PRINT($self->{buffer}) if defined $self->{buffer};
+  $self->SUPER::PRINT($self->{buffer}||'');
   $self->SUPER::CLOSE();
 }
 
@@ -51,7 +51,7 @@ sub CLOSE {
 sub TELL {
   # Return how big the buffer is
   my ($self) = @_;
-  return exists($self->{buffer}) ? bytes::length($self->{buffer}) : 0;
+  return bytes::length($self->{buffer}||'');
 }
 
 
