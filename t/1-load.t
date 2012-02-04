@@ -9,7 +9,7 @@ BEGIN {
   use_ok('IO::Pager');
   use_ok('IO::Pager::Unbuffered');
   use_ok('IO::Pager::Buffered');
-  ###use_ok('IO::Pager::Page');
+  use_ok('IO::Pager::Page');
 };
 
 done_testing;

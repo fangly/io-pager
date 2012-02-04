@@ -9,10 +9,10 @@ README
 TODO
 t.pl
 t/1-load.t
+t/2-which.t
 t/2-which_interactive.t
 t/3-bald_interactive.t
 t/4-buffered_interactive.t
 t/5-binmode_interactive.t
-t/6-pager.t
-t/7-scalar_interactive.t
+t/6-scalar_interactive.t
 t/TestUtils.pm

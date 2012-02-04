@@ -10,7 +10,7 @@ objects defined elsewhere such as IO::Pager::Buffered and IO::Pager::Unbuffered.
 
 IO::Pager subclasses are designed to programmatically decide whether
 or not to pipe a filehandle's output to a program specified in PAGER.
-Subclasses may inherit from IO::Pager, and imlpement the IO handle
+Subclasses may inherit from IO::Pager, and implement the IO handle
 methods desired.
 
 
