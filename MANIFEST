@@ -15,3 +15,4 @@ t/4-buffered_interactive.t
 t/5-binmode_interactive.t
 t/6-pager.t
 t/7-scalar_interactive.t
+t/TestUtils.pm

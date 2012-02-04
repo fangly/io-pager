@@ -30,8 +30,8 @@ SKIP: {
   is $warnings, undef, 'No wide character warnings';
 
   binmode STDOUT, ":utf8";
-  my $A = prompt "\nWere Unicode characters like \x{17D} and \x{A9},\nor perhaps bytecode a placeholder such as <U+1F42A> displayed in the pager? [Yn]";
-  ok is_yes($A), 'Binmode layer selection';
+  my $A = prompt "\nWere Unicode characters like \x{17D} and \x{A9},\nor perhaps a bytecode placeholder such as <U+1F42A> displayed in the pager? [Yn]";
+  ok is_yes($A), 'Binmode layer selection / pager Unicode support';
 }
 
 done_testing;
