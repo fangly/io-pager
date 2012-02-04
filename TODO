@@ -18,6 +18,7 @@
 	Hijack something to return filehandle(?), child pid(!),
 	but this amounts to nothing more than showing our private parts?
 	Alas tied handles have no STAT method to pass child as inode
+	GETC(hild)?
 
 0.02	Tue Jul 15 23:24:38 EDT 2003
 	Implement IO::Pager::Callback, just because it sounds cool?

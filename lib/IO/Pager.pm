@@ -113,7 +113,7 @@ sub TIEHANDLE {
 	     };
 
   #Signal handling closure for EOF
-  local $SIG{PIPE} = sub{ $self->{sigpipe} = 1 };
+  $SIG{PIPE} = sub{ warn 'PIPE!'; $self->{sigpipe} = 1 };
 
   return bless($self, $class);
 }
