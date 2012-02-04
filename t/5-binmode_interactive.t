@@ -19,17 +19,18 @@ SKIP: {
     # Stream unicode in a pager
     local $STDOUT = new IO::Pager *BOB, 'IO::Pager::Buffered';
     binmode BOB, ":utf8";
-    for (1..30) {
-      printf BOB "%06i ATTN: Unicode<\x{17d}\x{13d}>\n", $_;
-    }
-    printf BOB "End of text. Exit by pressing 'Q'.\n", $_;
+
+    printf BOB "Unicode Z-inverted carat: \x{17D}\n"; #Ž
+    printf BOB "Unicode Copyright < Copyleft: \x{A9} < \x{2184}\x{20DD}\n"; #© < ↄ⃝
+    printf BOB "Unicode camel: \x{1f42a}\n", $_; #	🐪 
+    printf BOB "\nEnd of text, try pressing 'Q' to exit.\n";
     close BOB;
   };
 
   is $warnings, undef, 'No wide character warnings';
 
   binmode STDOUT, ":utf8";
-  my $A = prompt "\nWas text containing 'Unicode<\x{17d}\x{13d}>' displayed in a pager? [Yn]";
+  my $A = prompt "\nWere Unicode characters like \x{17D} and \x{A9},\nor perhaps bytecode a placeholder such as <U+1F42A> displayed in the pager? [Yn]";
   ok is_yes($A), 'Binmode layer selection';
 }
 

@@ -23,9 +23,10 @@ SKIP: {
 
     eval {
       my $i = 0;
-      for (1..50) {
-        printf($BOB "%06i Printing text in a pager. Exit at any time by pressing 'Q'.\n", $_);
+      for (1..20) {
+        printf($BOB "%06i There is more than one to do it.\n", $_);
       }
+    printf BOB "\nEnd of text, try pressing 'Q' to exit.\n", $_;
     };
     close($BOB);
   }

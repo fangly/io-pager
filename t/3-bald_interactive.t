@@ -29,7 +29,7 @@ SKIP: {
       my $i = 0;
       $SIG{PIPE} = sub{ warn "Work complete" };
       while (1) {
-        printf BOB "%06i Printing text in a pager. Exit at any time by pressing 'Q'.\n", $i++;
+        printf BOB "%06i Printing text in a pager. Exit at any time, usually by pressing 'Q'.\n", $i++;
         sleep 1 unless $i%400;
       }
     };

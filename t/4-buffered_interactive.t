@@ -25,10 +25,10 @@ SKIP: {
     isa_ok $STDOUT, 'IO::Pager::Buffered';
     isa_ok $STDOUT, 'Tie::Handle';
 
-    for (1..30) {
+    for (1..50) {
       printf BOB "%06i Printing text in a pager.\n", $_;
     }
-    printf BOB "End of text. Exit by pressing 'Q'.\n", $_;
+    printf BOB "\nEnd of text, try pressing 'Q' to exit.\n", $_;
     close BOB;
   }
 
