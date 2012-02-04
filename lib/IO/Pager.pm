@@ -6,10 +6,10 @@ use Env qw( PAGER );
 use File::Spec;
 use base qw( Tie::Handle );
 
-our $VERSION = 0.10;
+our $VERSION = 0.16;
 
 
-sub _find_pager {
+sub find_pager {
   # Return the name (or path) of a pager that IO::Pager can use
   my $io_pager;
 
@@ -69,7 +69,7 @@ sub _check_pagers {
 
 BEGIN {
   # Set the PAGER environment variable to something reasonable
-  $PAGER = _find_pager();
+  $PAGER = find_pager();
 }
 
 
@@ -87,6 +87,9 @@ sub open(;$$) {
   $subclass->new($out_fh, $subclass);
 }
 
+#sub OPEN{
+#  
+#}
 
 # Methods required for implementing a tied filehandle class
 
@@ -145,11 +148,9 @@ sub CLOSE {
 
 
 sub TELL {
-  # Return how big the buffer is
-  my ($self) = @_;
-  return exists($self->{buffer}) ? bytes::length($self->{buffer}) : 0;
+  #Buffered classes provide their own, and others may use this in another way
+  return undef;
 }
-
 
 1;
 
@@ -176,24 +177,21 @@ IO::Pager - Select a pager and pipe text to it if destination is a TTY
 
 =head1 DESCRIPTION
 
-IO::Pager is a lightweight module to locate an available pager and set
-the I<PAGER> environment variable (see L</NOTES>). It is also a factory for
-creating objects such as L<IO::Pager::Buffered> and L<IO::Pager::Unbuffered>.
+IO::Pager can be used to locate an available pager and set the I<PAGER>
+environment variable (see L</NOTES>). It is also a factory for creating
+I/O objects such as L<IO::Pager::Buffered> and L<IO::Pager::Unbuffered>.
 
 IO::Pager subclasses are designed to programmatically decide whether
 or not to pipe a filehandle's output to a program specified in I<PAGER>.
-Subclasses are only required to support these filehandle methods:
+Subclasses may implement only the IO handle methods desired and inherit
+the following from IO::Pager:
 
 =over
 
 =item BINMODE
 
-Supports binmode() of the filehandle for I/O layer selection. For example, 
-for UTF-8 encoding:
-
-  $retval = new IO::Pager *STDOUT;
-  binmode STDOUT, ":utf8";
-  print STDOUT "Unicode<\x{17d}\x{13d}>\n";
+Used to set the I/O layer a.ka. discipline of a filehandle,
+such as C<':utf8'> for UTF-8 encoding.
 
 =item CLOSE
 

@@ -3,7 +3,7 @@ package IO::Pager::Buffered;
 use strict;
 use base qw( IO::Pager );
 
-our $VERSION = 0.10;
+our $VERSION = 0.16;
 
 
 sub new(;$) {
@@ -43,15 +43,15 @@ sub PRINT {
 sub CLOSE {
   my ($self) = @_;
   # Print buffer and close using IO::Pager's methods
-  $self->SUPER::PRINT($self->{buffer}||'');
+  $self->SUPER::PRINT($self->{buffer}) if exists $self->{buffer};
   $self->SUPER::CLOSE();
 }
 
 
 sub TELL {
-  # Return how big the buffer is
+  # Return the size of the buffer
   my ($self) = @_;
-  return bytes::length($self->{buffer}||'');
+  return exists($self->{buffer}) ? bytes::length($self->{buffer}) : 0;
 }
 
 

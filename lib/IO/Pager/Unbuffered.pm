@@ -3,7 +3,7 @@ package IO::Pager::Unbuffered;
 use strict;
 use base qw( IO::Pager );
 
-our $VERSION = 0.10;
+our $VERSION = 0.16;
 
 
 sub new(;$) {
