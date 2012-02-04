@@ -83,7 +83,6 @@ sub new(;$$) {
 sub open(;$$) {
   #Assign by reference if empty scalar given as filehandle
   $_[0] = gensym() if exists($_[0]) && !defined($_[0]);
-  warn($_[0]);
 
   my ($out_fh, $subclass) = @_;
   $subclass ||= 'IO::Pager::Unbuffered';
