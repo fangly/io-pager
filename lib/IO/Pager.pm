@@ -203,32 +203,34 @@ the following from IO::Pager:
 
 =over
 
-=item PRINT
-
-Supports print() to the filehandle.
-
-=item PRINTF
-
-Supports printf() to the filehandle.
-
-=item WRITE
-
-Supports syswrite() to the filehandle.
-
 =item BINMODE
 
-Used to set the I/O layer a.ka. discipline of a filehandle,
+Provides binmode() for the filehandle.
+
+Used to set the I/O layer a.k.a. discipline of a filehandle,
 such as C<':utf8'> for UTF-8 encoding.
 
 =item CLOSE
 
-Supports close() of the filehandle.
+Provides close() for the filehandle.
 
 =item EOF
 
-Supports eof() to detect if the filehandle is open.
+Provides eof() for detect if the filehandle is open.
 Returns true on SIGPIPE i.e; the pager has closed,
 and the last print or write may have failed.
+
+=item PRINT
+
+Provides print() for the filehandle.
+
+=item PRINTF
+
+Provides printf() for the filehandle.
+
+=item WRITE
+
+Provides syswrite() for the filehandle.
 
 =back
 
@@ -239,20 +241,16 @@ For anything else, YMMV.
 Instantiate a new IO::Pager to paginate FILEHANDLE if necessary.
 I<Assign the return value to a scoped variable>.
 
-The object will be of type SUBCLASS (L<IO::Pager::Unbuffered> by default). See
-the appropriate subclass for details.
-
 =over
 
 =item FILEHANDLE
 
 Defaults to currently select()-ed FILEHANDLE.
 
-=item EXPR
+=item SUBCLASS
 
-An expression which evaluates to the subclass of object to create.
-
-Defaults to L<IO::Pager::Unbuffered>.
+Create an object of type SUBCLASS if specified, else L<IO::Pager::Unbuffered>.
+See the appropriate subclass for details.
 
 =back
 
