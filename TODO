@@ -1,6 +1,4 @@
 0.16
-	Mechanism to gensym() scalars for the lazy user?
-
 	Test documented implicit closing when object passes out of scope;
 	previously via alias of DESTROY to CLOSE, but unnice if explicit close.
 

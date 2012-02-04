@@ -12,8 +12,7 @@ SKIP: {
 
 
   {
-    use Symbol;
-    my $BOB =Symbol::gensym();
+    my $BOB;
     local $STDOUT = IO::Pager::open($BOB, 'IO::Pager::Buffered');
 
     isa_ok $STDOUT, 'IO::Pager::Buffered';

@@ -2,9 +2,10 @@ package IO::Pager;
 
 use 5.008; #At least, for decent perlio, and other modernisms
 use strict;
+use base qw( Tie::Handle );
 use Env qw( PAGER );
 use File::Spec;
-use base qw( Tie::Handle );
+use Symbol;
 
 our $VERSION = 0.16;
 
@@ -80,6 +81,10 @@ sub new(;$$) {
 
 
 sub open(;$$) {
+  #Assign by reference if empty scalar given as filehandle
+  $_[0] = gensym() if exists($_[0]) && !defined($_[0]);
+  warn($_[0]);
+
   my ($out_fh, $subclass) = @_;
   $subclass ||= 'IO::Pager::Unbuffered';
   $subclass =~ s/^(?!IO::Pager::)/IO::Pager::/;
