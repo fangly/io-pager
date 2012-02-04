@@ -95,19 +95,27 @@ sub open(;$$) {
 
 sub TIEHANDLE {
   my ($class, $out_fh) = @_;
-  unless ( $PAGER ){
-    die "The PAGER environment variable is not defined, you may need to set it manually.";
-  }
+
+  #This should not happen
+  $PAGER or die "PAGER empty, set the environment variable manually.";
+
   my($tied_fh, $child);
   unless ( $child = CORE::open($tied_fh, "| $PAGER") ){
     $! = "Could not pipe to PAGER ('$PAGER'): $!\n";
     return 0;
   }
-  return bless {
-                'out_fh'  => $out_fh,
-                'tied_fh' => $tied_fh,
-                'child'   => $child
-               }, $class;
+
+  my $self = {
+	      'child'   => $child,
+	      'out_fh'  => $out_fh,
+	      'sigpipe' => 0,
+	      'tied_fh' => $tied_fh,
+	     };
+
+  #Signal handling closure for EOF
+  local $SIG{PIPE} = sub{ $self->{sigpipe} = 1 };
+
+  return bless($self, $class);
 }
 
 
@@ -129,15 +137,21 @@ sub PRINTF {
 }
 
 
-sub WRITE {
-  my ($self, $scalar, $length, $offset) = @_;
-  PRINT $self, substr($scalar, $offset||0, $length);
+sub TELL {
+  #Buffered classes provide their own, and others may use this in another way
+  return undef;
 }
 
 
-sub UNTIE {
+sub EOF{
   my ($self) = @_;
-  CORE::close($self->{tied_fh});
+  $self->{sigpipe};
+}
+
+
+sub WRITE {
+  my ($self, $scalar, $length, $offset) = @_;
+  PRINT $self, substr($scalar, $offset||0, $length);
 }
 
 
@@ -147,10 +161,11 @@ sub CLOSE {
 }
 
 
-sub TELL {
-  #Buffered classes provide their own, and others may use this in another way
-  return undef;
+sub UNTIE {
+  my ($self) = @_;
+  CORE::close($self->{tied_fh});
 }
+
 
 1;
 
@@ -188,15 +203,6 @@ the following from IO::Pager:
 
 =over
 
-=item BINMODE
-
-Used to set the I/O layer a.ka. discipline of a filehandle,
-such as C<':utf8'> for UTF-8 encoding.
-
-=item CLOSE
-
-Supports close() of the filehandle.
-
 =item PRINT
 
 Supports print() to the filehandle.
@@ -208,6 +214,21 @@ Supports printf() to the filehandle.
 =item WRITE
 
 Supports syswrite() to the filehandle.
+
+=item BINMODE
+
+Used to set the I/O layer a.ka. discipline of a filehandle,
+such as C<':utf8'> for UTF-8 encoding.
+
+=item CLOSE
+
+Supports close() of the filehandle.
+
+=item EOF
+
+Supports eof() to detect if the filehandle is open.
+Returns true on SIGPIPE i.e; the pager has closed,
+and the last print or write may have failed.
 
 =back
 
