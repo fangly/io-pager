@@ -13,6 +13,7 @@ BEGIN {
    @EXPORT  = qw{
       skip_interactive
       skip_old_perl
+      skip_no_file_which
       is_yes
       perl_exe
       perl_path
@@ -26,6 +27,10 @@ sub skip_interactive {
 
 sub skip_old_perl {
   skip "Layers requires Perl 5.8.0 or better.", 1 if $] < 5.008;
+}
+
+sub skip_no_file_which {
+  skip "This test requires File::Which.", 1 if not eval { require File::Which };
 }
 
 sub is_yes {

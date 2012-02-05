@@ -25,9 +25,13 @@ $PAGER = perl_path();
 $pager = IO::Pager::find_pager();
 is $pager, perl_path(), 'PAGER referred by its full-path';
 
-$PAGER = perl_exe();
-$pager = IO::Pager::find_pager();
-like $pager, qr/perl/i, 'PAGER is referred by its executable name';
+SKIP: {
+  skip_no_file_which();
+
+  $PAGER = perl_exe();
+  $pager = IO::Pager::find_pager();
+  like $pager, qr/perl/i, 'PAGER is referred by its executable name';
+}
 
 $PAGER = perl_path().' --quiet';
 $pager = IO::Pager::find_pager();
