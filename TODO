@@ -1,13 +1,32 @@
-0.1x
-	!!! Document use of scalar filehandles
+Important things here and in code flagged with XXX
 
-	Alter tests to cover all 6 invocation schemes? (new/open each class)
-	      ... and scalar vs. glob for each
+0.1x
+	XXX What gets documented where? Factory and base only in IO::Pager,
+	or general use coverage? If the former, no duplication in subclass,
+	just special method details and 'new IO::Pager::subclass' syntax?
+
+	XXX Test output when redirected to file
+
+	XXX Test failure to create handle (set bogus PAGER before new)
+
+	Alter tests to cover all invocation schemes, and track each in matrix?
+	      new/open each class
+	      scalar vs. glob
+	      non-fully qualified subclass name
+
+	Do they all need to be documented? Or just a few:
+		factory methods
+
+		new IO::Pager::subclass for beauty since ungainly undef is
+		"required" for FH, unless we could complicate code to make
+		IO::Pager::new smartly use 1st arg a FH or subclass
 
 	Does Unbuffered need $|=1, it seems to not print until close if OO?
 
+	"3-arg open" with layer?
+
 0.16
-	Test documented implicit closing when object passes out of scope;
+	XXX Test documented implicit closing when object passes out of scope;
 	previously via alias of DESTROY to CLOSE, but unnice if explicit close.
 
 	Clean-up/clarify returned object vs. filehandle?

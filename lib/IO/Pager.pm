@@ -190,12 +190,30 @@ IO::Pager - Select a pager and pipe text to it if destination is a TTY
 
   # Optionally, pipe output to it
   {
-    #local $retval =     IO::Pager::open *STDOUT; # Defaults to 'Unbuffered'
-    local  $retval = new IO::Pager       *STDOUT, 'Buffered';
+    # TIMTOWTDI, not an exhaustive list but you can infer the others
+    my $token =     IO::Pager::open *STDOUT; # Unbuffered is  default subclass
+    my $token = new IO::Pager       *STDOUT,  'Unbuffered'; # Specify subclass
+    my $token =     IO::Pager::Unbuffered::open *STDOUT;    # Must 'use' class!
+    my $token = new IO::Pager::Unbuffered       *STDOUT;    # Must 'use' class!
+
+
     print <<"  HEREDOC" ;
     ...
     A bunch of text later
     HEREDOC
+
+    #$token passes out of scope and filehandle is automagically closed XXX
+  }
+
+  {
+    # You can also use scalar filehandles...
+    my $token = IO::Pager::open($FH) or warn(XXX);
+    print $FH "No globs or barewords for us thanks!\n";
+  }
+    # ...or an object interface
+    my $token = new IO::Pager::Buffered;
+
+    $token->print("OO shiny...\n");
   }
 
 =head1 DESCRIPTION
