@@ -28,9 +28,8 @@ To install this module type the following:
 
 DEPENDENCIES
 
-Multiple core modules are used: base, Env, File::Spec, Symbol, Tie::Handle
-
-File::Which (part of the modern core) is strongly recommended
+Multiple core modules are used:
+base, Env, File::Spec, File::Which, SelectSaver, Symbol, Tie::Handle
 
 Test::More is used during the installation procedure.
 

@@ -15,4 +15,5 @@ t/3-bald_interactive.t
 t/4-buffered_interactive.t
 t/5-binmode_interactive.t
 t/6-scalar_interactive.t
+t/7-oo_interactive.t
 t/TestUtils.pm

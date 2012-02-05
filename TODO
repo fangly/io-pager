@@ -21,8 +21,6 @@ Important things here and in code flagged with XXX
 		"required" for FH, unless we could complicate code to make
 		IO::Pager::new smartly use 1st arg a FH or subclass
 
-	Does Unbuffered need $|=1, it seems to not print until close if OO?
-
 	"3-arg open" with layer?
 
 0.16

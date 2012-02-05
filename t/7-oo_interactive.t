@@ -31,6 +31,7 @@ SKIP: {
 
     $BOB->print("OO subclass filehandle\n");
     $BOB->print("\nEnd of text, try pressing 'Q' to exit.\n");
+    #XXX Close required because pager is not terminated on DESTROY
     $BOB->close();
   };
 

@@ -3,17 +3,23 @@ our $VERSION = 0.16;
 
 use strict;
 use base qw( IO::Pager );
+use SelectSaver;
 
-local $|=1;
 
 sub new(;$) {  # [FH]
-  return 0 unless (my($class, $out_fh) = &IO::Pager::_init);
-  tie *$out_fh, $class, $out_fh or die "Could not tie $$out_fh\n";
+  return 0 unless (my($class, $tied_fh) = &IO::Pager::_init);
+  my $self = tie *$tied_fh, $class, $tied_fh or die "Could not tie $$tied_fh\n";
+
+  { # Truly unbuffered
+    my $saver = SelectSaver->new($self->{real_fh});
+    $|=1;
+  }
+  return $self;
 }
 
 #Punt to base, preserving FH ($_[0]) for pass by reference to gensym
 sub open(;$) { # [FH]
-  IO::Pager::open($_[0], 'IO::Pager::Buffered');
+  IO::Pager::open($_[0], 'IO::Pager::Unbuffered');
 }
 
 

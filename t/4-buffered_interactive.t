@@ -20,20 +20,36 @@ SKIP: {
   ok is_yes($A), 'Diagnostic';
   
   {
-    local $STDOUT = new IO::Pager *BOB, 'IO::Pager::Buffered';
+    my $BOB = new IO::Pager *BOB, 'IO::Pager::Buffered';
 
-    isa_ok $STDOUT, 'IO::Pager::Buffered';
-    isa_ok $STDOUT, 'Tie::Handle';
+    isa_ok $BOB, 'IO::Pager::Buffered';
+    isa_ok $BOB, 'Tie::Handle';
 
-    for (1..50) {
-      printf BOB "%06i Printing text in a pager.\n", $_;
+    for (1..10) {
+      printf BOB "Line %06i, buffer [%06i] @ %s\n",
+	$_, tell(BOB), scalar localtime;
     }
-    printf BOB "\nEnd of text, try pressing 'Q' to exit.\n", $_;
+
+    print BOB "Sleeping for 2 seconds...\n";
+#    IO::Pager::Buffered::flush(*BOB);
+    $BOB->flush();
+    sleep 2;
+
+    for (reverse 1..10) {
+      printf BOB "Line %06i, buffer [%06i] @ %s\n",
+	$_, tell(BOB), scalar localtime;
+    }
+    printf BOB "\nEnd of text, try pressing 'Q' to exit. @%s\n",
+      scalar localtime;
+
     close BOB;
   }
 
   $A = prompt "\nWas the text displayed in a pager? [Yn]";
   ok is_yes($A), 'Buffered glob filehandle';
+
+  $A = prompt "\nWas there a pause between the two blocks of text? [Yn]";
+  ok is_yes($A), 'Flush buffered filehandle';
 }
 
 done_testing;

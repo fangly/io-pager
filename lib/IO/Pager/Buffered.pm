@@ -3,16 +3,17 @@ our $VERSION = 0.16;
 
 use strict;
 use base qw( IO::Pager );
+use SelectSaver;
 
 
 sub new(;$) {  # [FH]
-  return 0 unless (my($class, $out_fh) = &IO::Pager::_init);
-  tie *$out_fh, $class, $out_fh or die "Could not tie $$out_fh\n";
+  return 0 unless (my($class, $tied_fh) = &IO::Pager::_init);
+  tie *$tied_fh, $class, $tied_fh or die "Could not tie $$tied_fh\n";
 }
 
 #Punt to base, preserving FH ($_[0]) for pass by reference to gensym
 sub open(;$) { # [FH]
-  IO::Pager::open($_[0], 'IO::Pager::Unbuffered');
+  IO::Pager::open($_[0], 'IO::Pager::Buffered');
 }
 
 
@@ -35,9 +36,20 @@ sub CLOSE {
 sub TELL {
   # Return the size of the buffer
   my ($self) = @_;
-  return exists($self->{buffer}) ? bytes::length($self->{buffer}) : 0;
+  use bytes;
+  return exists($self->{buffer}) ? length($self->{buffer}) : 0;
 }
 
+
+sub flush(;*) {
+  my ($self) = @_;
+  if( exists $self->{buffer} ){
+    my $saver = SelectSaver->new($self->{real_fh});
+    local $|=1;
+    ($_, $self->{buffer}) = ( $self->{buffer}, '');
+    $self->SUPER::PRINT($_);
+  }
+}
 
 1;
 
@@ -82,11 +94,13 @@ I<Assign the return value to a scoped variable>. Output does not
 occur until all references to this variable are destroyed eg;
 upon leaving the current scope. See L</DESCRIPTION>.
 
-=over
-
 =head2 tell( FILEHANDLE )
 
 Returns the size of the buffer in bytes.
+
+=head2 flush( FILEHANDLE )
+
+Immediately flushes the contents of the buffer.
 
 =head1 CAVEATS
 

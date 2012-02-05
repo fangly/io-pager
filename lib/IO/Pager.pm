@@ -91,38 +91,38 @@ sub _init{ # CLASS, [FH] ## Note reversal of order due to CLASS from new()
   #Assign by reference if empty scalar given as filehandle
   $_[1] = gensym() if !defined($_[1]);
 
-  my ($class, $out_fh) = @_;
+  my ($class, $real_fh) = @_;
   no strict 'refs';
-  $out_fh ||= *{select()};
+  $real_fh ||= *{select()};
   # STDOUT & STDERR are separately bound to tty
-  if ( defined( my $FHn = fileno($out_fh) ) ) {
+  if ( defined( my $FHn = fileno($real_fh) ) ) {
     if ( $FHn == fileno(STDOUT) ) {
-      return 0 unless -t $out_fh;
+      return 0 unless -t $real_fh;
     }
     if ( $FHn == fileno(STDERR) ) {
-      return 0 unless -t $out_fh;
+      return 0 unless -t $real_fh;
     }
   }
   # This allows us to have multiple pseudo-STDOUT
   return 0 unless -t STDOUT;
-  return ($class, $out_fh);
+  return ($class, $real_fh);
 }
 
 
 # Methods required for implementing a tied filehandle class
 
 sub TIEHANDLE {
-  my ($class, $out_fh) = @_;
+  my ($class, $tied_fh) = @_;
   unless ( $PAGER ){
     die "The PAGER environment variable is not defined, you may need to set it manually.";
   }
-  my($tied_fh, $child);
-  unless ( $child = CORE::open($tied_fh, "| $PAGER") ){
+  my($real_fh, $child);
+  unless ( $child = CORE::open($real_fh, "| $PAGER") ){
     $! = "Could not pipe to PAGER ('$PAGER'): $!\n";
     return 0;
   }
   return bless {
-                'out_fh'  => $out_fh,
+                'real_fh' => $real_fh,
                 'tied_fh' => $tied_fh,
                 'child'   => $child
                }, $class;
@@ -131,36 +131,36 @@ sub TIEHANDLE {
 
 sub BINMODE {
   my ($self, $layer) = @_;
-  CORE::binmode($self->{tied_fh}, $layer||':raw');
+  CORE::binmode($self->{real_fh}, $layer||':raw');
 }
 
 
 sub PRINT {
   my ($self, @args) = @_;
-  CORE::print {$self->{tied_fh}} @args or die "Could not print on tied filehandle\n$!\n";
+  CORE::print {$self->{real_fh}} @args or die "Could not print to PAGER: $!\n";
 }
 
 
 sub PRINTF {
   my ($self, $format, @args) = @_;
-  PRINT $self, sprintf($format, @args);
+  $self->PRINT(sprintf($format, @args));
 }
 
 sub WRITE {
   my ($self, $scalar, $length, $offset) = @_;
-  PRINT $self, substr($scalar, $offset||0, $length);
+  $self->PRINT(substr($scalar, $offset||0, $length));
 }
 
 
 sub UNTIE {
   my ($self) = @_;
-  CORE::close($self->{tied_fh});
+  CORE::close($self->{real_fh});
 }
 
 
 sub CLOSE {
   my ($self) = @_;
-  untie *{$self->{out_fh}};
+  untie *{$self->{tied_fh}};
 }
 
 

@@ -1,4 +1,4 @@
-for (glob "t/*interactive.t") {
+for (sort glob "t/*interactive.t") {
   print "Running $_...\n";
   system($^X, '-Mblib', $_);
 }
