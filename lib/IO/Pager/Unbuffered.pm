@@ -1,34 +1,19 @@
 package IO::Pager::Unbuffered;
+our $VERSION = 0.16;
 
 use strict;
 use base qw( IO::Pager );
-
-our $VERSION = 0.16;
+use Symbol;
 
 
 sub new(;$) {
-  my ($class, $out_fh) = @_;
-  no strict 'refs';
-  $out_fh ||= *{select()};
-  # STDOUT & STDERR are separately bound to tty
-  if ( defined( my $FHn = fileno($out_fh) ) ) {
-    if ( $FHn == fileno(STDOUT) ) {
-      return 0 unless -t $out_fh;
-    }
-    if ( $FHn == fileno(STDERR) ) {
-      return 0 unless -t $out_fh;
-    }
-  }
-  # This allows us to have multiple pseudo-STDOUT
-  return 0 unless -t STDOUT;
-  tie *$out_fh, $class, $out_fh
-    or die "Could not tie $$out_fh\n";
+  return 0 unless my($class, $out_fh) = &IO::Pager::_init;
+  tie *$out_fh, $class, $out_fh or die "Could not tie $$out_fh\n";
 }
 
-
+#Punt to base, preserving FH ($_[0]) for pass by reference to gensym
 sub open(;$) {
-  my ($out_fh) = @_;
-  new IO::Pager::Unbuffered $out_fh;
+  IO::Pager::open($_[0], 'IO::Pager::Buffered');
 }
 
 
@@ -59,30 +44,7 @@ IO::Pager is designed to programmatically decide whether or not to point
 the STDOUT file handle into a pipe to program specified in the I<PAGER>
 environment variable or one of a standard list of pagers.
 
-=head2 new( [FILEHANDLE] )
-
-Instantiate a new IO::Pager to paginate FILEHANDLE if necessary.
-I<Assign the return value to a scoped variable>.
-
-=over
-
-=item FILEHANDLE
-
-Defaults to currently select()-ed FILEHANDLE.
-
-=back
-
-=head2 open( [FILEHANDLE] )
-
-An alias for new.
-
-=head2 close( FILEHANDLE )
-
-Explicitly close the filehandle, if a pager was deemed necessary this
-will kill it. Normally you would just wait for the user to exit the pager
-and the object to pass out of scope.
-
-I<This does not default to the current filehandle>.
+See L<IO::Pager> for method details.
 
 =head1 CAVEATS
 

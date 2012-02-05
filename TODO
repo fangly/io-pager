@@ -1,3 +1,9 @@
+0.1x
+	!!! Document use of scalar filehandles
+
+	Alter tests to cover all 6 invocation schemes? (new/open each class)
+	      ... and scalar vs. glob for each
+
 0.16
 	Test documented implicit closing when object passes out of scope;
 	previously via alias of DESTROY to CLOSE, but unnice if explicit close.
@@ -8,14 +14,11 @@
 		  *new = *TIEHANDLE;
 		  *print = *PRINT;
 
-	Clean-up new/open/TIEHANDLE mess? Use sub OPEN?
-
 	Clean-up/clarify returned object vs. filehandle?
-
-	SIGPIPE => EOF?
 
 0.10
 	Implement eof?
+		To indicate SIGPIPE? ...handler localization difficulties (.16)
 
 	Hijack something to return filehandle(?), child pid(!),
 	but this amounts to nothing more than showing our private parts?

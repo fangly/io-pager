@@ -1,13 +1,11 @@
 package IO::Pager;
+our $VERSION = 0.16;
 
 use 5.008; #At least, for decent perlio, and other modernisms
 use strict;
 use base qw( Tie::Handle );
 use Env qw( PAGER );
 use File::Spec;
-use Symbol;
-
-our $VERSION = 0.16;
 
 
 sub find_pager {
@@ -27,13 +25,14 @@ sub find_pager {
 
   # Then search pager amongst usual suspects
   if (not defined $io_pager) {
-    my @pagers = ('/usr/local/bin/less', '/usr/bin/less', '/usr/bin/more');
+    my @pagers = ('/usr/local/bin/less', '/usr/bin/less',
+		  '/etc/alternatives/pager', '/usr/bin/more');
     $io_pager = _check_pagers(\@pagers, $which) 
   }
 
-  # Then try for common pagers in more exotic places
+  # Then check PATH for other pagers
   if ( (not defined $io_pager) && $which ) {
-    my @pagers = ['less', 'most', 'w3m', 'more'];
+    my @pagers = ('less', 'most', 'w3m', 'lv', 'pg', 'more');
     $io_pager = _check_pagers(\@pagers, $which );
   }
 
@@ -42,7 +41,6 @@ sub find_pager {
 
   return $io_pager;
 }
-
 
 sub _check_pagers {
   my ($pagers, $which) = @_;
@@ -67,33 +65,49 @@ sub _check_pagers {
   return $io_pager;
 }
 
-
-BEGIN {
-  # Set the PAGER environment variable to something reasonable
+#Should have this as first block for clarity, but not with its use of a sub :-/
+BEGIN { # Set the $ENV{PAGER} to something reasonable
   $PAGER = find_pager();
 }
 
 
-sub new(;$$) {
-  my ($class, $out_fh, $subclass) = @_;
-  IO::Pager::open($out_fh, $subclass);
-}
-
-
+#Factory
 sub open(;$$) {
-  #Assign by reference if empty scalar given as filehandle
-  $_[0] = gensym() if exists($_[0]) && !defined($_[0]);
-
-  my ($out_fh, $subclass) = @_;
+  #Leave filehandle in @_ for pass by reference to allow gensym
+  my $subclass = $_[1] if exists($_[1]);
   $subclass ||= 'IO::Pager::Unbuffered';
   $subclass =~ s/^(?!IO::Pager::)/IO::Pager::/;
   eval "require $subclass" or die "Could not load $subclass: $@\n";
-  $subclass->new($out_fh, $subclass);
+  $subclass->new($_[0], $subclass);
 }
 
-#sub OPEN{
-#  
-#}
+#Alternate entrance: drop class but leave FH, subclass
+sub new(;$$) {
+  shift, &IO::Pager::open;
+}
+
+
+sub _init{
+  #Assign by reference if empty scalar given as filehandle
+  $_[1] = gensym() if exists($_[1]) && !defined($_[1]);
+
+  my ($class, $out_fh) = @_;
+  no strict 'refs';
+  $out_fh ||= *{select()};
+  # STDOUT & STDERR are separately bound to tty
+  if ( defined( my $FHn = fileno($out_fh) ) ) {
+    if ( $FHn == fileno(STDOUT) ) {
+      return 0 unless -t $out_fh;
+    }
+    if ( $FHn == fileno(STDERR) ) {
+      return 0 unless -t $out_fh;
+    }
+  }
+  # This allows us to have multiple pseudo-STDOUT
+  return 0 unless -t STDOUT;
+  return ($class, $out_fh);
+}
+
 
 # Methods required for implementing a tied filehandle class
 
@@ -188,7 +202,8 @@ I/O objects such as L<IO::Pager::Buffered> and L<IO::Pager::Unbuffered>.
 IO::Pager subclasses are designed to programmatically decide whether
 or not to pipe a filehandle's output to a program specified in I<PAGER>.
 Subclasses may implement only the IO handle methods desired and inherit
-the following from IO::Pager:
+the remainder below from IO::Pager; see IO::Pager::Unbuffered for an
+example of a minimal IO::Pager subclass.
 
 =over
 
