@@ -6,7 +6,7 @@ use strict;
 use base qw( Tie::Handle );
 use Env qw( PAGER );
 use File::Spec;
-
+use Symbol;
 
 sub find_pager {
   # Return the name (or path) of a pager that IO::Pager can use
@@ -72,24 +72,24 @@ BEGIN { # Set the $ENV{PAGER} to something reasonable
 
 
 #Factory
-sub open(;$$) {
+sub open(;$$) { # [FH], [CLASS]
   #Leave filehandle in @_ for pass by reference to allow gensym
   my $subclass = $_[1] if exists($_[1]);
   $subclass ||= 'IO::Pager::Unbuffered';
   $subclass =~ s/^(?!IO::Pager::)/IO::Pager::/;
   eval "require $subclass" or die "Could not load $subclass: $@\n";
-  $subclass->new($_[0], $subclass);
+  $subclass->new($_[0]);
 }
 
 #Alternate entrance: drop class but leave FH, subclass
-sub new(;$$) {
+sub new(;$$) { # [FH], [CLASS]
   shift, &IO::Pager::open;
 }
 
 
-sub _init{
+sub _init{ # CLASS, [FH] ## Note reversal of order due to CLASS from new()
   #Assign by reference if empty scalar given as filehandle
-  $_[1] = gensym() if exists($_[1]) && !defined($_[1]);
+  $_[1] = gensym() if !defined($_[1]);
 
   my ($class, $out_fh) = @_;
   no strict 'refs';
@@ -146,7 +146,6 @@ sub PRINTF {
   PRINT $self, sprintf($format, @args);
 }
 
-
 sub WRITE {
   my ($self, $scalar, $length, $offset) = @_;
   PRINT $self, substr($scalar, $offset||0, $length);
@@ -169,6 +168,12 @@ sub TELL {
   #Buffered classes provide their own, and others may use this in another way
   return undef;
 }
+
+foreach my $method ( qw(BINMODE CLOSE PRINT PRINTF TELL WRITE) ){
+  no strict 'refs';
+  *{lc($method)} = \&{$method};
+}
+
 
 1;
 

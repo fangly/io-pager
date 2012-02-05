@@ -3,16 +3,15 @@ our $VERSION = 0.16;
 
 use strict;
 use base qw( IO::Pager );
-use Symbol;
 
 
-sub new(;$) {
-  return 0 unless my($class, $out_fh) = &IO::Pager::_init;
+sub new(;$) {  # [FH]
+  return 0 unless (my($class, $out_fh) = &IO::Pager::_init);
   tie *$out_fh, $class, $out_fh or die "Could not tie $$out_fh\n";
 }
 
 #Punt to base, preserving FH ($_[0]) for pass by reference to gensym
-sub open(;$) {
+sub open(;$) { # [FH]
   IO::Pager::open($_[0], 'IO::Pager::Unbuffered');
 }
 

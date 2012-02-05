@@ -4,17 +4,14 @@
 	Alter tests to cover all 6 invocation schemes? (new/open each class)
 	      ... and scalar vs. glob for each
 
+	Does Unbuffered need $|=1, it seems to not print until close if OO?
+
 0.16
 	Test documented implicit closing when object passes out of scope;
 	previously via alias of DESTROY to CLOSE, but unnice if explicit close.
 
-	Implement OO via IO::Wrap/IO::WrapTie/IO::File, or othersuch
-	    ...Filter::Handle<http://www.perlmonks.org/index.pl?node_id=27415>:
-		  # An OO interface for free! :-)
-		  *new = *TIEHANDLE;
-		  *print = *PRINT;
-
 	Clean-up/clarify returned object vs. filehandle?
+		...(partially) done if OO is documented (.1x)
 
 0.10
 	Implement eof?
