@@ -8,8 +8,8 @@ Important things here and in code flagged with XXX
 	Alter tests to cover all invocation schemes,
 	and document location of each in matrix?
 		new/open each class
-		scalar vs. glob
-		non-fully qualified subclass name
+		scalar vs. glob vs. OO
+		(non-)fully qualified subclass name
 
 	Do they all need to be documented, or just a few? Currently,
 	factory methods and new IO::Pager::subclass for beauty since
