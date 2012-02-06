@@ -1,5 +1,5 @@
 package IO::Pager::Buffered;
-our $VERSION = 0.16;
+our $VERSION = 0.20;
 
 use strict;
 use base qw( IO::Pager );
@@ -51,31 +51,44 @@ sub flush(;*) {
   }
 }
 
+
 1;
 
 __END__
 
 =head1 NAME
 
-IO::Pager::Buffered - Pipe deferred output to a pager if destination is to a TTY
+IO::Pager::Buffered - Pipe deferred output to PAGER if destination is a TTY
 
 =head1 SYNOPSIS
 
   use IO::Pager::Buffered;
   {
-    #local $STDOUT =     IO::Pager::Buffered::open *STDOUT;
-    local  $STDOUT = new IO::Pager::Buffered       *STDOUT;
+    local $token = IO::Pager::Buffered::open *STDOUT;
     print <<"  HEREDOC" ;
     ...
     A bunch of text later
     HEREDOC
   }
 
+  {
+    # You can also use scalar filehandles...
+    my $token = IO::Pager::Buffered::open($FH) or warn(XXX);
+    print $FH "No globs or barewords for us thanks!\n";
+  }
+
+  {
+    # ...or an object interface
+    my $token = new IO::Pager::Buffered;
+
+    $token->print("OO shiny...\n");
+  }
+
 =head1 DESCRIPTION
 
-IO::Pager is designed to programmatically decide whether or not to point
-the STDOUT file handle into a pipe to program specified in the I<PAGER>
-environment variable or one of a standard list of pagers.
+IO::Pager subclasses are designed to programmatically decide whether
+or not to pipe a filehandle's output to a program specified in I<PAGER>;
+determined and set by IO::Pager at runtime if not yet defined.
 
 This subclass buffers all output for display upon exiting the current scope.
 If this is not what you want look at another subclass such as
@@ -85,7 +98,9 @@ showing only warnings on STDERR, then displaying the output to STDOUT after.
 Or alternately letting output to STDOUT slide by and defer warnings for later
 perusal.
 
-Class-specific method specifics:
+=head1 METHODS
+
+Class-specific method specifics below, others are inherited from IO::Pager.
 
 =head2 new( [FILEHANDLE] )
 
@@ -101,6 +116,10 @@ Returns the size of the buffer in bytes.
 =head2 flush( FILEHANDLE )
 
 Immediately flushes the contents of the buffer.
+
+If the last print did not end with a newline, the text from the
+preceding newline to the end of the buffer will be flushed but
+is unlikely to display until a newline is printed and flushed.
 
 =head1 CAVEATS
 

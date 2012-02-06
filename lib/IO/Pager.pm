@@ -1,5 +1,5 @@
 package IO::Pager;
-our $VERSION = 0.16;
+our $VERSION = 0.20;
 
 use 5.008; #At least, for decent perlio, and other modernisms
 use strict;
@@ -210,6 +210,8 @@ IO::Pager - Select a pager and pipe text to it if destination is a TTY
     my $token = IO::Pager::open($FH) or warn(XXX);
     print $FH "No globs or barewords for us thanks!\n";
   }
+
+  {
     # ...or an object interface
     my $token = new IO::Pager::Buffered;
 
@@ -225,71 +227,64 @@ I/O objects such as L<IO::Pager::Buffered> and L<IO::Pager::Unbuffered>.
 IO::Pager subclasses are designed to programmatically decide whether
 or not to pipe a filehandle's output to a program specified in I<PAGER>.
 Subclasses may implement only the IO handle methods desired and inherit
-the remainder below from IO::Pager; see IO::Pager::Unbuffered for an
-example of a minimal IO::Pager subclass.
+the remainder of those outlined below from IO::Pager. For anything else,
+YMMV. See the appropriate subclass for implementation specific details.
 
-=over
-
-=item BINMODE
-
-Used to set the I/O layer a.ka. discipline of a filehandle,
-such as C<':utf8'> for UTF-8 encoding.
-
-=item CLOSE
-
-Supports close() of the filehandle.
-
-=item PRINT
-
-Supports print() to the filehandle.
-
-=item PRINTF
-
-Supports printf() to the filehandle.
-
-=item WRITE
-
-Supports syswrite() to the filehandle.
-
-=back
-
-For anything else, YMMV.
+=head1 METHODS
 
 =head2 new( [FILEHANDLE], [SUBCLASS] )
 
-Instantiate a new IO::Pager to paginate FILEHANDLE if necessary.
-I<Assign the return value to a scoped variable>.
+An alias for open.
 
-The object will be of type SUBCLASS (L<IO::Pager::Unbuffered> by default). See
-the appropriate subclass for details.
+=head2 open( [FILEHANDLE], [SUBCLASS] )
+
+Instantiate a new IO::Pager, which will paginate output sent to
+FILEHANDLE if interacting with a TTY.
+
+I<Assign the return value to a scoped variable>. XXX
 
 =over
 
 =item FILEHANDLE
 
-Defaults to currently select()-ed FILEHANDLE.
+You may provide a glob or scalar.
 
-=item EXPR
+Defaults to currently select()-ed F<FILEHANDLE>.
 
-An expression which evaluates to the subclass of object to create.
+=item SUBCLASS
+
+Specifies which variety of IO::Pager to create.
+This accepts fully qualified packages I<IO::Pager::Buffered>,
+or simply the third portion of the package name I<Buffered> for brevity.
 
 Defaults to L<IO::Pager::Unbuffered>.
 
 =back
 
-=head2 open( [FILEHANDLE], [EXPR] )
-
-An alias for new.
-
 =head2 close( FILEHANDLE )
 
 Explicitly close the filehandle, this stops any redirection of output
-on FILEHANDLE that may have been warranted. Normally you'd just wait
-for the object to pass out of scope.
+on FILEHANDLE that may have been warranted.
+Normally you'd just wait for the object to pass out of scope. XXX
 
 I<This does not default to the current filehandle>.
 
-See the appropriate subclass for implementation specific details.
+=head2 binmode( FILEHANDLE )
+
+Used to set the I/O layer a.k.a. discipline of a filehandle,
+such as C<':utf8'> for UTF-8 encoding.
+
+=head2 print ( FILEHANDLE LIST )
+
+print() to the filehandle.
+
+=head2 printf ( FILEHANDLE FORMAT, LIST )
+
+printf() to the filehandle.
+
+=head2 syswrite( FILEHANDLE, SCALAR, [LENGTH], [OFFSET] )
+
+syswrite() to the filehandle.
 
 =head1 ENVIRONMENT
 
@@ -301,7 +296,7 @@ The location of the default pager.
 
 =item PATH
 
-If PAGER does not specify an absolute path for the binary PATH may be used.
+If the location in PAGER is not absolute, PATH may be searched.
 
 See L</NOTES> for more information.
 

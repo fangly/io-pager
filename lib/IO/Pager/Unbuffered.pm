@@ -1,5 +1,5 @@
 package IO::Pager::Unbuffered;
-our $VERSION = 0.16;
+our $VERSION = 0.20;
 
 use strict;
 use base qw( IO::Pager );
@@ -25,32 +25,47 @@ sub open(;$) { # [FH]
 
 1;
 
-
 __END__
 
 =head1 NAME
 
-IO::Pager::Unbuffered - Pipe output to a pager if destination is to a TTY
+IO::Pager::Unbuffered - Pipe output to PAGER if destination is a TTY
 
 =head1 SYNOPSIS
 
   use IO::Pager::Unbuffered;
   {
-    #local $STDOUT =     IO::Pager::Unbuffered::open *STDOUT;
-    local  $STDOUT = new IO::Pager::Unbuffered       *STDOUT;
+    local $STDOUT = IO::Pager::Unbuffered::open *STDOUT;
     print <<"  HEREDOC" ;
     ...
     A bunch of text later
     HEREDOC
   }
 
+  {
+    # You can also use scalar filehandles...
+    my $token = IO::Pager::Unbuffered::open($FH) or warn(XXX);
+    print $FH "No globs or barewords for us thanks!\n";
+  }
+
+  {
+    # ...or an object interface
+    my $token = new IO::Pager::Unbuffered;
+
+    $token->print("OO shiny...\n");
+  }
+
 =head1 DESCRIPTION
 
-IO::Pager is designed to programmatically decide whether or not to point
-the STDOUT file handle into a pipe to program specified in the I<PAGER>
-environment variable or one of a standard list of pagers.
+IO::Pager subclasses are designed to programmatically decide whether
+or not to pipe a filehandle's output to a program specified in I<PAGER>;
+determined and set by IO::Pager at runtime if not yet defined.
 
 See L<IO::Pager> for method details.
+
+=head1 METHODS
+
+All methods are inherited from IO::Pager; except for instantiation.
 
 =head1 CAVEATS
 

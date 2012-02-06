@@ -1,6 +1,6 @@
 Important things here and in code flagged with XXX
 
-0.1x
+0.20
 	XXX What gets documented where? Factory and base only in IO::Pager,
 	or general use coverage? If the former, no duplication in subclass,
 	just special method details and 'new IO::Pager::subclass' syntax?
@@ -10,9 +10,9 @@ Important things here and in code flagged with XXX
 	XXX Test failure to create handle (set bogus PAGER before new)
 
 	Alter tests to cover all invocation schemes, and track each in matrix?
-	      new/open each class
-	      scalar vs. glob
-	      non-fully qualified subclass name
+		new/open each class
+		scalar vs. glob
+		non-fully qualified subclass name
 
 	Do they all need to be documented? Or just a few:
 		factory methods
@@ -28,7 +28,7 @@ Important things here and in code flagged with XXX
 	previously via alias of DESTROY to CLOSE, but unnice if explicit close.
 
 	Clean-up/clarify returned object vs. filehandle?
-		...(partially) done if OO is documented (.1x)
+		...(partially) done if OO is documented (.20)
 
 0.10
 	Implement eof?
@@ -36,7 +36,7 @@ Important things here and in code flagged with XXX
 
 	Hijack something to return filehandle(?), child pid(!),
 	but this amounts to nothing more than showing our private parts?
-	Alas tied handles have no STAT method to pass child as inode
+	Alas tied handles have no STAT method to pass child as inode (.16)
 
 0.02	Tue Jul 15 23:24:38 EDT 2003
 	Implement IO::Pager::Callback, just because it sounds cool?
