@@ -1,10 +1,6 @@
 Important things here and in code flagged with XXX
 
 0.20
-	XXX What gets documented where? Factory and base only in IO::Pager,
-	or general use coverage? If the former, no duplication in subclass,
-	just special method details and 'new IO::Pager::subclass' syntax?
-
 	XXX Test output when redirected to file
 
 	XXX Test failure to create handle (set bogus PAGER before new)
