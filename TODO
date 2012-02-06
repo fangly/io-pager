@@ -5,17 +5,18 @@ Important things here and in code flagged with XXX
 
 	XXX Test failure to create handle (set bogus PAGER before new)
 
-	Alter tests to cover all invocation schemes, and track each in matrix?
+	Alter tests to cover all invocation schemes,
+	and document location of each in matrix?
 		new/open each class
 		scalar vs. glob
 		non-fully qualified subclass name
 
-	Do they all need to be documented? Or just a few:
-		factory methods
+	Do they all need to be documented, or just a few? Currently,
+	factory methods and new IO::Pager::subclass for beauty since
+	ungainly undef is "required" for FH with OO-style factory new
 
-		new IO::Pager::subclass for beauty since ungainly undef is
-		"required" for FH, unless we could complicate code to make
-		IO::Pager::new smartly use 1st arg a FH or subclass
+	Complicate IO::Pager::new code to make it smartly use first
+	arg as FH or subclass and remove need for ungainly undef?
 
 	"3-arg open" with layer?
 
