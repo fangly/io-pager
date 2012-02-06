@@ -25,8 +25,8 @@ sub find_pager {
 
   # Then search pager amongst usual suspects
   if (not defined $io_pager) {
-    my @pagers = ('/usr/local/bin/less', '/usr/bin/less',
-		  '/etc/alternatives/pager', '/usr/bin/more');
+    my @pagers = ('/etc/alternatives/pager',
+		  '/usr/local/bin/less', '/usr/bin/less', '/usr/bin/more');
     $io_pager = _check_pagers(\@pagers, $which) 
   }
 
@@ -309,6 +309,8 @@ executable.
 
 =over
 
+=item /etc/alternatives/pager
+
 =item /usr/local/bin/less
 
 =item /usr/bin/less
@@ -327,7 +329,7 @@ The algorithm for determining which pager to use is as follows:
 
 =item 1. Defer to I<PAGER>
 
-If the I<PAGER> environment variable is set, use the pagger it identifies,
+If the I<PAGER> environment variable is set, use the pager it identifies,
 unless this pager is not available.
 
 =item 2. Usual suspects
@@ -336,8 +338,8 @@ Try the standard, hardcoded paths in L</FILES>.
 
 =item 3. File::Which
 
-If File::Which is available, use the first pager possible amongst C<less>,
-C<most>, C<w3m> and L<more>.
+If File::Which is available, use the first pager possible amongst
+C<less>, C<most>, C<w3m>, C<lv>, C<pg> and L<more>.
 
 =item 4. more
 
