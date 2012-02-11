@@ -7,9 +7,12 @@ use SelectSaver;
 
 
 sub new(;$) {  # [FH]
-  return 0 unless (my($class, $tied_fh) = &IO::Pager::_init);
-  my $self = tie *$tied_fh, $class, $tied_fh or die "Could not tie $$tied_fh\n";
+  my($class, $tied_fh);
 
+  eval { ($class, $tied_fh) = &IO::Pager::_init };
+  return $_[1] if $@ =~ '!TTY'; #leave filehandle alone
+
+  my $self = tie *$tied_fh, $class, $tied_fh or die "Could not tie $$tied_fh\n";
   { # Truly unbuffered
     my $saver = SelectSaver->new($self->{real_fh});
     $|=1;

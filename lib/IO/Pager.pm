@@ -94,13 +94,14 @@ sub _init{ # CLASS, [FH] ## Note reversal of order due to CLASS from new()
   my ($class, $real_fh) = @_;
   no strict 'refs';
   $real_fh ||= *{select()};
+
   # STDOUT & STDERR are separately bound to tty
   if ( defined( my $FHn = fileno($real_fh) ) ) {
     if ( $FHn == fileno(STDOUT) ) {
-      return 0 unless -t $real_fh;
+      die '!TTY' unless -t $real_fh;
     }
     if ( $FHn == fileno(STDERR) ) {
-      return 0 unless -t $real_fh;
+      die '!TTY' unless -t $real_fh;
     }
   }
   # This allows us to have multiple pseudo-STDOUT

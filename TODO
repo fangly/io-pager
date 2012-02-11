@@ -1,8 +1,6 @@
 Important things here and in code flagged with XXX
 
 0.20
-	XXX Test output when redirected to file
-
 	XXX Test failure to create handle (set bogus PAGER before new)
 
 	Alter tests to cover all invocation schemes,

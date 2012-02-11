@@ -5,6 +5,8 @@ Revision history for Perl extension IO::Pager.
 
   	Fixed bug #74691, add File::Which as dependency / skip test if missing
 
+	Fixed non-TTY/redirection behavior and added test
+
 	Auto-gensym scalar variables
 
 	Add alternate pagers 'lv', 'pg'
