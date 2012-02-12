@@ -17,7 +17,7 @@ SKIP: {
     $BOB->print("OO factory filehandle\n");
     $BOB->print("\nEnd of text, try pressing 'Q' to exit.\n");
     $BOB->close();
-  };
+  }
 
   my $A1 = prompt "\nDid you see 'OO factory filehandle' in your pager? [Yn]";
   ok is_yes($A1), 'OO, factory instantiation';
@@ -33,7 +33,7 @@ SKIP: {
     $BOB->print("\nEnd of text, try pressing 'Q' to exit.\n");
     #XXX Close required because pager is not terminated on DESTROY
     $BOB->close();
-  };
+  }
 
   my $A2 = prompt "\nDid you see 'OO subclass filehandle' in your pager? [Yn]";
   ok is_yes($A2), 'OO, subclass instantiation';

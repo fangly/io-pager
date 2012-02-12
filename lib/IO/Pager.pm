@@ -91,24 +91,24 @@ sub _init{ # CLASS, [FH] ## Note reversal of order due to CLASS from new()
   #Assign by reference if empty scalar given as filehandle
   $_[1] = gensym() if !defined($_[1]);
 
-  my ($class, $real_fh) = @_;
+#  my ($class, $real_fh) = @_;
   no strict 'refs';
-  $real_fh ||= *{select()};
+  $_[1] ||= *{select()};
 
   # Are we on a TTY? STDOUT & STDERR are separately bound
-  if ( defined( my $FHn = fileno($real_fh) ) ) {
+  if ( defined( my $FHn = fileno($_[1]) ) ) {
     if ( $FHn == fileno(STDOUT) ) {
-      die '!TTY' unless -t $real_fh;
+      die '!TTY' unless -t $_[1];
     }
     if ( $FHn == fileno(STDERR) ) {
-      die '!TTY' unless -t $real_fh;
+      die '!TTY' unless -t $_[1];
     }
   }
 
   # XXX This allows us to have multiple pseudo-STDOUT
 #  return 0 unless -t STDOUT;
 
-  return ($class, $real_fh);
+  return ($_[0], $_[1]);
 }
 
 
@@ -204,7 +204,8 @@ IO::Pager - Select a pager and pipe text to it if destination is a TTY
     A bunch of text later
     HEREDOC
 
-    #$token passes out of scope and filehandle is automagically closed XXX
+    # $token passes out of scope and filehandle is automagically closed
+    # NOT YET IMPLEMENTED XXX
   }
 
   {
@@ -243,7 +244,9 @@ An alias for open.
 Instantiate a new IO::Pager, which will paginate output sent to
 FILEHANDLE if interacting with a TTY.
 
-I<Assign the return value to a scoped variable>. XXX
+Save the return value to check for errors, use as an object,
+and (NOT YET IMPLEMENTED) implicitly close the handle when
+the variable passes out of scope.
 
 =over
 
@@ -269,7 +272,8 @@ Returns false and sets I<$!> on failure, same as perl's C<open>.
 
 Explicitly close the filehandle, this stops any redirection of output
 on FILEHANDLE that may have been warranted.
-Normally you'd just wait for the object to pass out of scope. XXX
+
+Normally you'd just wait for the object to pass out of scope. NOT YET IMPLEMENTED
 
 I<This does not default to the current filehandle>.
 
