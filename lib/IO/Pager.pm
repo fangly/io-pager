@@ -95,7 +95,7 @@ sub _init{ # CLASS, [FH] ## Note reversal of order due to CLASS from new()
   no strict 'refs';
   $real_fh ||= *{select()};
 
-  # STDOUT & STDERR are separately bound to tty
+  # Are we on a TTY? STDOUT & STDERR are separately bound
   if ( defined( my $FHn = fileno($real_fh) ) ) {
     if ( $FHn == fileno(STDOUT) ) {
       die '!TTY' unless -t $real_fh;
@@ -104,8 +104,10 @@ sub _init{ # CLASS, [FH] ## Note reversal of order due to CLASS from new()
       die '!TTY' unless -t $real_fh;
     }
   }
-  # This allows us to have multiple pseudo-STDOUT
+
+  # XXX This allows us to have multiple pseudo-STDOUT
   return 0 unless -t STDOUT;
+
   return ($class, $real_fh);
 }
 
@@ -119,8 +121,7 @@ sub TIEHANDLE {
   }
   my($real_fh, $child);
   unless ( $child = CORE::open($real_fh, "| $PAGER") ){
-    $! = "Could not pipe to PAGER ('$PAGER'): $!\n";
-    return 0;
+    die "Could not pipe to PAGER ('$PAGER'): $!\n";
   }
   return bless {
                 'real_fh' => $real_fh,
@@ -259,6 +260,8 @@ This accepts fully qualified packages I<IO::Pager::Buffered>,
 or simply the third portion of the package name I<Buffered> for brevity.
 
 Defaults to L<IO::Pager::Unbuffered>.
+
+Returns false and sets $! on failure, same as perl's C<open>.
 
 =back
 

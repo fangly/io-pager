@@ -10,9 +10,11 @@ sub new(;$) {  # [FH]
   my($class, $tied_fh);
 
   eval { ($class, $tied_fh) = &IO::Pager::_init };
-  return $_[1] if $@ =~ '!TTY'; #leave filehandle alone
+  # leave filehandle alone
+  return $_[1] if defined($class) && $class eq '0' or $@ =~ '!TTY';
+  $!=$@, return 0 if $@ =~ 'pipe';
 
-  my $self = tie *$tied_fh, $class, $tied_fh or die "Could not tie $$tied_fh\n";
+  my $self = tie *$tied_fh, $class, $tied_fh or return 0;
   { # Truly unbuffered
     my $saver = SelectSaver->new($self->{real_fh});
     $|=1;

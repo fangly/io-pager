@@ -1,15 +1,18 @@
 Revision history for Perl extension IO::Pager.
 
 0.20	
-	Fix buffering in both ::Buffered and ::Unbuffered
-
   	Fixed bug #74691, add File::Which as dependency / skip test if missing
 
-	Fixed non-TTY/redirection behavior and added test
+	Fixed non-TTY/redirection behavior and added corresponding test
 
-	Auto-gensym scalar variables
+	Improve buffering sistuation in both ::Buffered and ::Unbuffered
 
-	Add alternate pagers 'lv', 'pg'
+	Auto-gensym scalar filehandles like perl's open
+
+	Add OO interface
+
+	Add alternate pagers 'lv', 'pg',
+	and system default '/etc/alternatives/pager' (bug# 74519)
 
 0.16	Fri Feb 3 2012
 
