@@ -49,7 +49,7 @@ IO::Pager::Unbuffered - Pipe output to PAGER if destination is a TTY
 
   {
     # You can also use scalar filehandles...
-    my $token = IO::Pager::Unbuffered::open($FH) or warn(XXX);
+    my $token = IO::Pager::Unbuffered::open($FH) or warn($!);
     print $FH "No globs or barewords for us thanks!\n";
   }
 

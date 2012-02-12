@@ -209,7 +209,7 @@ IO::Pager - Select a pager and pipe text to it if destination is a TTY
 
   {
     # You can also use scalar filehandles...
-    my $token = IO::Pager::open($FH) or warn(XXX);
+    my $token = IO::Pager::open($FH) or warn($!);
     print $FH "No globs or barewords for us thanks!\n";
   }
 
