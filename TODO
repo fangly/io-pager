@@ -1,6 +1,8 @@
 Important things here and in code flagged with XXX
 
 0.20
+	"Fix" multi-pseudo-STDOUT disabled in 9-open.t implementation?
+
 	Alter tests to cover all invocation schemes,
 	and document location of each in matrix?
 		new/open each class

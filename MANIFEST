@@ -16,4 +16,7 @@ t/4-buffered_interactive.t
 t/5-binmode_interactive.t
 t/6-scalar_interactive.t
 t/7-oo_interactive.t
+t/8-redirect.pl
+t/8-redirect.t
+7/9-open.t
 t/TestUtils.pm

@@ -106,7 +106,7 @@ sub _init{ # CLASS, [FH] ## Note reversal of order due to CLASS from new()
   }
 
   # XXX This allows us to have multiple pseudo-STDOUT
-  return 0 unless -t STDOUT;
+#  return 0 unless -t STDOUT;
 
   return ($class, $real_fh);
 }
@@ -261,7 +261,7 @@ or simply the third portion of the package name I<Buffered> for brevity.
 
 Defaults to L<IO::Pager::Unbuffered>.
 
-Returns false and sets $! on failure, same as perl's C<open>.
+Returns false and sets I<$!> on failure, same as perl's C<open>.
 
 =back
 
