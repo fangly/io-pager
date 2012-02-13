@@ -14,6 +14,7 @@ BEGIN {
       skip_interactive
       skip_old_perl
       skip_no_file_which
+      skip_not_in_path
       is_yes
       perl_exe
       perl_path
@@ -31,6 +32,14 @@ sub skip_old_perl {
 
 sub skip_no_file_which {
   skip "This test requires File::Which.", 1 if not eval { require File::Which };
+}
+
+sub skip_not_in_path {
+  # Test that the specified executable can be found in the PATH environment
+  # variable using File::Which.
+  my $exe = shift; 
+  my $loc = File::Which::which($exe);
+  skip "Executable $exe is not in PATH.", 1 if not defined $loc;
 }
 
 sub is_yes {
