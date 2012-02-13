@@ -39,7 +39,7 @@ sub skip_not_in_path {
   # variable using File::Which.
   my $exe = shift; 
   my $loc = File::Which::which($exe);
-  skip "Executable $exe is not in PATH.", 1 if not defined $loc;
+  skip "Executable '$exe' is not in PATH.", 1 if not defined $loc;
 }
 
 sub is_yes {
