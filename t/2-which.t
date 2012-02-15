@@ -31,8 +31,8 @@ is $pager, perl_path(), 'PAGER referred by its full-path';
 # Perl is sure to be present, pretend it's a pager specified w/o path
 SKIP: {
   skip_no_file_which();
-
   $PAGER = perl_exe();
+  skip_not_in_path($PAGER);
   $pager = IO::Pager::find_pager();
   like $pager, qr/perl/i, 'PAGER is referred by its executable name';
 }
