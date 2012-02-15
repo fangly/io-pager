@@ -171,7 +171,14 @@ sub TELL {
   return undef;
 }
 
-foreach my $method ( qw(BINMODE CLOSE PRINT PRINTF TELL WRITE) ){
+
+sub PID{
+  my ($self) = @_;
+  return $self->{child};
+}
+
+
+foreach my $method ( qw(BINMODE CLOSE PRINT PRINTF TELL WRITE PID) ){
   no strict 'refs';
   *{lc($method)} = \&{$method};
 }
@@ -267,6 +274,12 @@ Defaults to L<IO::Pager::Unbuffered>.
 Returns false and sets I<$!> on failure, same as perl's C<open>.
 
 =back
+
+=head2 PID()
+
+Call this method on the token returned by C<open> to get the process
+identifier for the child process i.e; pager; if you need to perform
+some long term process management e.g; perl's C<waitpid>
 
 =head2 close( FILEHANDLE )
 
