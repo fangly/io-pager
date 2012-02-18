@@ -5,6 +5,8 @@ Revision history for Perl extension IO::Pager.
 
 	Add PID method & token overload to access pager process identifier.
 
+	Remove semi-circular reference in object to fix implicit close().
+
 0.20	Sat Feb 11 2012
 
 	Fixed bug #74691, add File::Which as dependency / skip test if missing

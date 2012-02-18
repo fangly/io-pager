@@ -1,4 +1,4 @@
-IO::Pager version 0.16
+IO::Pager version 0.21
 =====================
 
 IO::Pager - Select a pager and pipe text to it if destination is a TTY

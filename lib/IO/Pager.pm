@@ -10,6 +10,7 @@ use Symbol;
 
 use overload '+' => "PID", bool=> "PID";
 
+
 sub find_pager {
   # Return the name (or path) of a pager that IO::Pager can use
   my $io_pager;
@@ -127,7 +128,6 @@ sub TIEHANDLE {
   }
   return bless {
                 'real_fh' => $real_fh,
-                'tied_fh' => $tied_fh,
                 'child'   => $child,
 		'pager'   => $PAGER,
                }, $class;
@@ -215,7 +215,6 @@ IO::Pager - Select a pager and pipe text to it if destination is a TTY
     HEREDOC
 
     # $token passes out of scope and filehandle is automagically closed
-    # NOT YET IMPLEMENTED XXX
   }
 
   {
@@ -255,8 +254,7 @@ Instantiate a new IO::Pager, which will paginate output sent to
 FILEHANDLE if interacting with a TTY.
 
 Save the return value to check for errors, use as an object,
-and (NOT YET IMPLEMENTED) implicitly close the handle when
-the variable passes out of scope.
+and implicitly close the handle when the variable passes out of scope.
 
 =over
 

@@ -3,6 +3,10 @@ Important things here and in code flagged with XXX
 0.21
 	Test PID? ( defined? >0? `ps`?)
 
+	Broken UNTIE?
+
+	XXX Finish 10-close_interactive.t
+
 0.20
 	"Fix" multi-pseudo-STDOUT disabled in 9-open.t implementation?
 
@@ -18,10 +22,6 @@ Important things here and in code flagged with XXX
 	"3-arg open" with layer?
 
 0.16
-	XXX Test documented implicit closing when object passes out of scope;
-	previously via alias of DESTROY to CLOSE, but unnice if explicit close.
-		Broken UNTIE? (0.21)
-
 	Clean-up/clarify returned object vs. filehandle?
 		...(partially) done since OO is documented (.20)
 
