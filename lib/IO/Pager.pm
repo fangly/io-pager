@@ -1,5 +1,5 @@
 package IO::Pager;
-our $VERSION = 0.20;
+our $VERSION = 0.21;
 
 use 5.008; #At least, for decent perlio, and other modernisms
 use strict;
