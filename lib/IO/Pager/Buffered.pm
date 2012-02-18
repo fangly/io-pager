@@ -1,5 +1,5 @@
 package IO::Pager::Buffered;
-our $VERSION = 0.20;
+our $VERSION = 0.24;
 
 use strict;
 use base qw( IO::Pager );
@@ -38,6 +38,7 @@ sub CLOSE {
   $self->SUPER::CLOSE();
 }
 
+*DESTROY = \&CLOSE;
 
 sub TELL {
   # Return the size of the buffer

@@ -15,6 +15,7 @@ BEGIN {
       skip_old_perl
       skip_no_file_which
       skip_not_in_path
+      is_no
       is_yes
       perl_exe
       perl_path
@@ -45,6 +46,11 @@ sub skip_not_in_path {
 sub is_yes {
   my ($val) = @_;
   return ($val =~ /^y(?:es)?/i || $val eq '');
+}
+
+sub is_no {
+  my ($val) = @_;
+  return ($val =~ /^n(?:o)?/i || $val eq '');
 }
 
 sub perl_exe {

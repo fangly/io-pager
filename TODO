@@ -1,11 +1,7 @@
 Important things here and in code flagged with XXX
 
-0.21
+0.24
 	Test PID? ( defined? >0? `ps`?)
-
-	Broken UNTIE?
-
-	XXX Finish 10-close_interactive.t
 
 0.20
 	"Fix" multi-pseudo-STDOUT disabled in 9-open.t implementation?
@@ -26,7 +22,7 @@ Important things here and in code flagged with XXX
 		...(partially) done since OO is documented (.20)
 
 0.10
-	Implement eof?
+	XXX Implement eof?
 		To indicate SIGPIPE? ...handler localization difficulties (.16)
 
 	Hijack something to return filehandle(?),

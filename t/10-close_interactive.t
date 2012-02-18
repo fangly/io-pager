@@ -1,0 +1,45 @@
+use strict;
+use warnings;
+use Test::More;
+use t::TestUtils;
+use IO::Pager;
+
+SKIP: {
+  skip_interactive();
+
+  my $A;
+
+  PAUSE: {
+    my $token = new IO::Pager undef, 'Buffered';
+    isa_ok $token, 'IO::Pager::Buffered';
+
+    my $PID = $token->PID;
+    $token->print("Pager child '$token->{pager}' is PID $PID\n");
+    is $PID, $token->{child}, "PID($PID)";
+    sleep 1;
+  }
+  $A = prompt "\nWas there a pause before the text appeared? [Ynr] (r-epeat)";
+  goto PAUSE if $A eq 'r';
+  ok is_yes($A), 'Implicit close of buffered OO filehandle';
+
+
+  {
+    IO::Pager::open local *BOB, 'Buffered';
+    print BOB "No frog sexing allowed";
+  }
+  $A = prompt "\nIs frog sexing allowed? [yN]";
+  goto PAUSE if $A eq 'r';
+  ok is_no($A), 'Implicit close of buffered glob filehandle';
+
+
+  #Possible future test, but meanwhile is here to ensure proper destruction,
+  #since the output of this block would appear before above if no implicit close
+  {
+    new IO::Pager *MARY;
+    print MARY "I like trains\n";
+    close(MARY);
+  }
+
+}
+
+done_testing;

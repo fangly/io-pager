@@ -1,5 +1,5 @@
 package IO::Pager;
-our $VERSION = 0.21;
+our $VERSION = 0.24;
 
 use 5.008; #At least, for decent perlio, and other modernisms
 use strict;
@@ -145,7 +145,6 @@ sub PRINT {
   CORE::print {$self->{real_fh}} @args or die "Could not print to PAGER: $!\n";
 }
 
-
 sub PRINTF {
   my ($self, $format, @args) = @_;
   $self->PRINT(sprintf($format, @args));
@@ -157,30 +156,28 @@ sub WRITE {
 }
 
 
-sub UNTIE {
-  my ($self) = @_;
-  CORE::close($self->{real_fh});
-}
-
-
-sub CLOSE {
-  my ($self) = @_;
-  untie *{$self->{tied_fh}};
-}
-
-
 sub TELL {
   #Buffered classes provide their own, and others may use this in another way
   return undef;
 }
 
 
+sub CLOSE {
+  my ($self) = @_;
+  CORE::close($self->{real_fh});
+}
+
+*DESTROY = \&CLOSE;
+
+
+#Non-IO methods
 sub PID{
   my ($self) = @_;
   return $self->{child};
 }
 
 
+#Provide lowercase aliases for accessors
 foreach my $method ( qw(BINMODE CLOSE PRINT PRINTF TELL WRITE PID) ){
   no strict 'refs';
   *{lc($method)} = \&{$method};
@@ -254,7 +251,7 @@ Instantiate a new IO::Pager, which will paginate output sent to
 FILEHANDLE if interacting with a TTY.
 
 Save the return value to check for errors, use as an object,
-and implicitly close the handle when the variable passes out of scope.
+or for implict close of OO handles when the variable passes out of scope.
 
 =over
 
@@ -276,7 +273,7 @@ Returns false and sets I<$!> on failure, same as perl's C<open>.
 
 =back
 
-=head2 PID()
+=head2 PID
 
 Call this method on the token returned by C<open> to get the process
 identifier for the child process i.e; pager; if you need to perform
@@ -291,9 +288,24 @@ You can also access the PID by numifying the instantiation token like so:
 Explicitly close the filehandle, this stops any redirection of output
 on FILEHANDLE that may have been warranted.
 
-Normally you'd just wait for the object to pass out of scope. NOT YET IMPLEMENTED
-
 I<This does not default to the current filehandle>.
+
+Alternatively, you may rely upon the implicit close of lexical handles
+as they pass out of scope e.g;
+
+  {
+     IO::Pager::open local *FROG;
+     print FROG "No frog sexing allowed";
+     ...
+  }
+  #The filehandle is closed to additional output
+
+  {
+     my $token = new IO::Pager::Buffered;
+     $token->print("I like trains");
+     ...
+  }
+  #The string "I like trains" is flushed to the pager, and the handle closed
 
 =head2 binmode( FILEHANDLE )
 
