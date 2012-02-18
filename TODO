@@ -17,10 +17,6 @@ Important things here and in code flagged with XXX
 
 	"3-arg open" with layer?
 
-0.16
-	Clean-up/clarify returned object vs. filehandle?
-		...(partially) done since OO is documented (.20)
-
 0.10
 	XXX Implement eof?
 		To indicate SIGPIPE? ...handler localization difficulties (.16)
