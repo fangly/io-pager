@@ -8,6 +8,8 @@ use Env qw( PAGER );
 use File::Spec;
 use Symbol;
 
+use overload '+' => "PID", bool=> "PID";
+
 sub find_pager {
   # Return the name (or path) of a pager that IO::Pager can use
   my $io_pager;
@@ -126,7 +128,8 @@ sub TIEHANDLE {
   return bless {
                 'real_fh' => $real_fh,
                 'tied_fh' => $tied_fh,
-                'child'   => $child
+                'child'   => $child,
+		'pager'   => $PAGER,
                }, $class;
 }
 
@@ -280,6 +283,10 @@ Returns false and sets I<$!> on failure, same as perl's C<open>.
 Call this method on the token returned by C<open> to get the process
 identifier for the child process i.e; pager; if you need to perform
 some long term process management e.g; perl's C<waitpid>
+
+You can also access the PID by numifying the instantiation token like so:
+
+  my $child = $token+0;
 
 =head2 close( FILEHANDLE )
 

@@ -1,7 +1,7 @@
 Important things here and in code flagged with XXX
 
 0.21
-	Test PID? ( defined? >0? )
+	Test PID? ( defined? >0? `ps`?)
 
 0.20
 	"Fix" multi-pseudo-STDOUT disabled in 9-open.t implementation?
@@ -29,10 +29,10 @@ Important things here and in code flagged with XXX
 	Implement eof?
 		To indicate SIGPIPE? ...handler localization difficulties (.16)
 
-	Hijack something to return filehandle(?), child pid(!),
+	Hijack something to return filehandle(?),
 	but this amounts to nothing more than showing our private parts?
 		Alas tied FH have no STAT method to pass child as inode (.16)
-		overload 0+ for PID? &| ->PID method? (0.21)
+		Accessor for pager too? (.21)
 
 0.02
 	Implement IO::Pager::Callback, just because it sounds cool?
