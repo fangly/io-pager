@@ -15,6 +15,7 @@ SKIP: {
 
     my $PID = $token->PID;
     $token->print("Pager child '$token->{pager}' is PID $PID\n");
+    $token->print("\nEnd of text, try pressing 'Q' to exit.\n");
     is $PID, $token->{child}, "PID($PID)";
     sleep 1;
   }
@@ -24,10 +25,11 @@ SKIP: {
 
 
   {
-    IO::Pager::open local *BOB, 'Buffered';
-    print BOB "No frog sexing allowed";
+    IO::Pager::open local *RIBBIT, 'Buffered';
+    print RIBBIT "No toad sexing allowed";
+    print RIBBIT "\nEnd of text, try pressing 'Q' to exit.\n"
   }
-  $A = prompt "\nIs frog sexing allowed? [yN]";
+  $A = prompt "\nIs toad sexing allowed? (And posted before commentary on trains) [yN]";
   goto PAUSE if $A eq 'r';
   ok is_no($A), 'Implicit close of buffered glob filehandle';
 
@@ -37,6 +39,7 @@ SKIP: {
   {
     new IO::Pager *MARY;
     print MARY "I like trains\n";
+    print MARY "\nEnd of text, try pressing 'Q' to exit.\n";
     close(MARY);
   }
 

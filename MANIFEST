@@ -19,4 +19,5 @@ t/07-oo_interactive.t
 t/08-redirect.pl
 t/08-redirect.t
 t/09-open.t
+t/10-close_interactive.t
 t/TestUtils.pm

@@ -294,8 +294,8 @@ Alternatively, you may rely upon the implicit close of lexical handles
 as they pass out of scope e.g;
 
   {
-     IO::Pager::open local *FROG;
-     print FROG "No frog sexing allowed";
+     IO::Pager::open local *RIBBIT;
+     print RIBBIT "No toad sexing allowed";
      ...
   }
   #The filehandle is closed to additional output
