@@ -150,6 +150,12 @@ sub PRINTF {
   $self->PRINT(sprintf($format, @args));
 }
 
+sub SAY {
+  my ($self, @args) = @_;
+  $args[-1] .= "\n";
+  $self->PRINT(@args);
+}
+
 sub WRITE {
   my ($self, $scalar, $length, $offset) = @_;
   $self->PRINT(substr($scalar, $offset||0, $length));
@@ -178,7 +184,7 @@ sub PID{
 
 
 #Provide lowercase aliases for accessors
-foreach my $method ( qw(BINMODE CLOSE PRINT PRINTF TELL WRITE PID) ){
+foreach my $method ( qw(BINMODE CLOSE PRINT PRINTF SAY TELL WRITE PID) ){
   no strict 'refs';
   *{lc($method)} = \&{$method};
 }
