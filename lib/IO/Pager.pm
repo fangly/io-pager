@@ -250,7 +250,8 @@ YMMV. See the appropriate subclass for implementation specific details.
 
 =head2 new( [FILEHANDLE], [SUBCLASS] )
 
-An alias for open.
+Almost identical to open, except that you will get an L<IO::Handle>
+back if there's no TTY to allow for IO::Pager agnostic programming.
 
 =head2 open( [FILEHANDLE], [SUBCLASS] )
 

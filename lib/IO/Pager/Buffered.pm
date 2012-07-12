@@ -116,12 +116,17 @@ perusal.
 
 Class-specific method specifics below, others are inherited from IO::Pager.
 
-=head2 new( [FILEHANDLE] )
+=head2 open( [FILEHANDLE] )
 
 Instantiate a new IO::Pager to paginate FILEHANDLE if necessary.
 I<Assign the return value to a scoped variable>. Output does not
 occur until all references to this variable are destroyed eg;
 upon leaving the current scope. See L</DESCRIPTION>.
+
+=head2 new( [FILEHANDLE] )
+
+Almost identical to open, except that you will get an L<IO::Handle>
+back if there's no TTY to allow for IO::Pager agnostic programming.
 
 =head2 tell( FILEHANDLE )
 
