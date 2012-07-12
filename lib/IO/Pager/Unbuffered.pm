@@ -1,17 +1,23 @@
 package IO::Pager::Unbuffered;
-our $VERSION = 0.20;
+our $VERSION = 0.30;
 
 use strict;
 use base qw( IO::Pager );
 use SelectSaver;
 
 
-sub new(;$) {  # [FH]
+sub new(;$) {  # [FH], procedural
   my($class, $tied_fh);
 
   eval { ($class, $tied_fh) = &IO::Pager::_init };
-  # leave filehandle alone
-  return $_[1] if defined($class) && $class eq '0' or $@ =~ '!TTY';
+  #We're not on a TTY so...
+  if( defined($class) && $class eq '0' or $@ =~ '!TTY' ){
+      #...leave filehandle alone if procedural
+      return $_[1] if defined($_[2]) && $_[2] eq 'procedural';
+
+      #...fall back to IO::Handle for transparent OO programming
+      eval "require IO::Handle" && return new IO::Handle;
+  }
   $!=$@, return 0 if $@ =~ 'pipe';
 
   my $self = tie *$tied_fh, $class, $tied_fh or return 0;
@@ -24,7 +30,8 @@ sub new(;$) {  # [FH]
 
 #Punt to base, preserving FH ($_[0]) for pass by reference to gensym
 sub open(;$) { # [FH]
-  IO::Pager::open($_[0], 'IO::Pager::Unbuffered');
+#  IO::Pager::open($_[0], 'IO::Pager::Unbuffered');
+  &new('IO::Pager::procedural', $_[0], 'procedural');
 }
 
 

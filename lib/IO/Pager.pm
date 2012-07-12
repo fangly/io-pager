@@ -1,5 +1,5 @@
 package IO::Pager;
-our $VERSION = 0.24;
+our $VERSION = 0.30;
 
 use 5.008; #At least, for decent perlio, and other modernisms
 use strict;
@@ -76,6 +76,13 @@ BEGIN { # Set the $ENV{PAGER} to something reasonable
 
 #Factory
 sub open(;$$) { # [FH], [CLASS]
+    &new(undef, @_, 'procedural');
+}
+
+#Alternate entrance: drop class but leave FH, subclass
+sub new(;$$) { # [FH], [CLASS]
+  shift;
+
   #Leave filehandle in @_ for pass by reference to allow gensym
   my $subclass = $_[1] if exists($_[1]);
   $subclass ||= 'IO::Pager::Unbuffered';
@@ -84,17 +91,11 @@ sub open(;$$) { # [FH], [CLASS]
   $subclass->new($_[0]);
 }
 
-#Alternate entrance: drop class but leave FH, subclass
-sub new(;$$) { # [FH], [CLASS]
-  shift, &IO::Pager::open;
-}
-
 
 sub _init{ # CLASS, [FH] ## Note reversal of order due to CLASS from new()
   #Assign by reference if empty scalar given as filehandle
   $_[1] = gensym() if !defined($_[1]);
 
-#  my ($class, $real_fh) = @_;
   no strict 'refs';
   $_[1] ||= *{select()};
 
@@ -150,7 +151,7 @@ sub PRINTF {
   $self->PRINT(sprintf($format, @args));
 }
 
-sub SAY {
+sub say {
   my ($self, @args) = @_;
   $args[-1] .= "\n";
   $self->PRINT(@args);
@@ -184,7 +185,7 @@ sub PID{
 
 
 #Provide lowercase aliases for accessors
-foreach my $method ( qw(BINMODE CLOSE PRINT PRINTF SAY TELL WRITE PID) ){
+foreach my $method ( qw(BINMODE CLOSE PRINT PRINTF TELL WRITE PID) ){
   no strict 'refs';
   *{lc($method)} = \&{$method};
 }
