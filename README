@@ -1,4 +1,4 @@
-IO::Pager version 0.24
+IO::Pager version 0.30
 =====================
 
 IO::Pager - Select a pager and pipe text to it if destination is a TTY
@@ -29,7 +29,7 @@ To install this module type the following:
 DEPENDENCIES
 
 Multiple core modules are used:
-base, Env, File::Spec, File::Which, SelectSaver, Symbol, Tie::Handle
+base, Env, File::Spec, File::Which, IO::Handle, SelectSaver, Symbol, Tie::Handle
 
 Test::More is used during the installation procedure.
 
