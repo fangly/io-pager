@@ -17,6 +17,7 @@ WriteMakefile(
        'File::Spec'     => 0,
        'File::Which'    => 0,
        'IO::Handle'     => 0,
+       'PerlIO'         => 0,
        'SelectSaver'    => 0,
        'Symbol'         => 0,
        'Tie::Handle'    => 0,

@@ -6,6 +6,7 @@ use strict;
 use base qw( Tie::Handle );
 use Env qw( PAGER );
 use File::Spec;
+use PerlIO;
 use Symbol;
 
 use overload '+' => "PID", bool=> "PID";
@@ -124,7 +125,19 @@ sub TIEHANDLE {
     die "The PAGER environment variable is not defined, you may need to set it manually.";
   }
   my($real_fh, $child);
-  unless ( $child = CORE::open($real_fh, "| $PAGER") ){
+  if ( $child = CORE::open($real_fh, "| $PAGER") ){
+    my @oLayers = PerlIO::get_layers($tied_fh, details=>1, output=>1);
+    my $layers = '';
+    for(my $i=0;$i<$#oLayers;$i+=3){
+      #An extra base layer requires more keystrokes to exit
+      next if $oLayers[$i] =~ /unix|stdio/ && !defined($oLayers[+1]);
+
+      $layers .= ":$oLayers[$i]";
+      $layers .=  '(' . ($oLayers[$i+1]) . ')' if defined($oLayers[$i+1]);
+    }
+    CORE::binmode($real_fh, $layers);
+  }
+  else{
     die "Could not pipe to PAGER ('$PAGER'): $!\n";
   }
   return bless {
