@@ -10,7 +10,7 @@ END{ unlink $tempname or die "Could not unlink '$tempname': $!" }
 
 #Print the heredoc in 08-redirect.pl to temp file via redirection
 my $q = q['];
-$q = q["] if $^O eq 'MSWin32';
+$q = q["] if $^O =~ /MSWin32|cygwin/;
 system qq($^X -Mblib -MIO::Pager::Page -e $q require q[t/08-redirect.pl]; print \$txt $q >$tempname);
 
 open(TMP, $tempname) or die "Could not open tmpfile: $!\n";

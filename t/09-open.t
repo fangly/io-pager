@@ -9,7 +9,7 @@ use IO::Pager;
 
 SKIP: {
   skip("Skiping because Windows has to be different^Wdifficult", 1)
-    if $^O ne 'MSWin32';
+    if $^O =~ /MSWin32|cygwin/;
 
   undef $ENV{PAGER};
   eval{ my $token = new IO::Pager };
