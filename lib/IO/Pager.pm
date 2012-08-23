@@ -76,23 +76,27 @@ BEGIN { # Set the $ENV{PAGER} to something reasonable
 
 #Factory
 sub open(;$$) { # [FH], [CLASS]
-    &new(undef, @_, 'procedural');
+    new('procedural', @_);
 }
 
 #Alternate entrance: drop class but leave FH, subclass
 sub new(;$$) { # [FH], [CLASS]
-  shift;
-
   #Leave filehandle in @_ for pass by reference to allow gensym
+  my $mode = shift;
   my $subclass = $_[1] if exists($_[1]);
+
   $subclass ||= 'IO::Pager::Unbuffered';
   $subclass =~ s/^(?!IO::Pager::)/IO::Pager::/;
   eval "require $subclass" or die "Could not load $subclass: $@\n";
-  $subclass->new($_[0]);
+  $subclass->new($_[0], $mode);
 }
 
 
 sub _init{ # CLASS, [FH] ## Note reversal of order due to CLASS from new()
+
+  # XXX This allows us to have multiple pseudo-STDOUT
+  #return 0 unless -t STDOUT;
+
   #Assign by reference if empty scalar given as filehandle
   $_[1] = gensym() if !defined($_[1]);
 
@@ -100,17 +104,7 @@ sub _init{ # CLASS, [FH] ## Note reversal of order due to CLASS from new()
   $_[1] ||= *{select()};
 
   # Are we on a TTY? STDOUT & STDERR are separately bound
-  if ( defined( my $FHn = fileno($_[1]) ) ) {
-    if ( $FHn == fileno(STDOUT) ) {
-      die '!TTY' unless -t $_[1];
-    }
-    if ( $FHn == fileno(STDERR) ) {
-      die '!TTY' unless -t $_[1];
-    }
-  }
-
-  # XXX This allows us to have multiple pseudo-STDOUT
-#  return 0 unless -t STDOUT;
+  die '!TTY' unless -t $_[1] || -t STDOUT;
 
   return ($_[0], $_[1]);
 }

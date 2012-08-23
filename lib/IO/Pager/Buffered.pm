@@ -16,8 +16,8 @@ sub new(;$) {  # [FH]
       return $_[1] if defined($_[2]) && $_[2] eq 'procedural';
 
       #...fall back to IO::Handle for transparent OO programming
-      eval "require IO::Handle" or die $@;
-      return IO::Handle->new_from_fd(fileno($_[1]), 'w');
+      eval "require IO::Pager::less" or die $@;
+      return IO::Pager::less::new($_[1], 0);
   }
   $!=$@, return 0 if $@ =~ 'pipe';
 
