@@ -4,9 +4,9 @@ use File::Temp;
 use Test::More;
 use t::TestUtils;
 
-my $temp = File::Temp->new();
-my $tempname = $temp->filename();
-$temp->unlink_on_destroy(1);
+#Disable warnings for awkard test file mechanism required by Windows
+my(undef, $tempname) = do{ $^W=0; File::Temp::tempfile(OPEN=>0)};
+END { unlink $tempname or die "Could not unlink '$tempname': $!" }
 
 #Print the heredoc in 11-redirect.pl to temp file via redirection
 system qq($^X t/11-redirect-oo.pl >$tempname);
