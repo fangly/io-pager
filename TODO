@@ -3,6 +3,9 @@ Important things here and in code flagged with XXX
 0.30
 	Create a tee sub-class/layer?
 
+	Complete the ::less subclass so that non-interactive fallback
+	for OO interaction works.
+
 0.20
 	"Fix" multi-pseudo-STDOUT disabled in 09-open.t implementation?
 
