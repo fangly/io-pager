@@ -4,7 +4,7 @@ Important things here and in code flagged with XXX
 	Create a tee sub-class/layer?
 
 	Complete the ::less subclass so that non-interactive fallback
-	for OO interaction works.
+	for OO interaction works. (pagerless branch in git)
 
 0.20
 	"Fix" multi-pseudo-STDOUT disabled in 09-open.t implementation?
