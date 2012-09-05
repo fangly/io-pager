@@ -6,11 +6,11 @@ use t::TestUtils;
 
 #Disable warnings for awkard test file mechanism required by Windows
 my(undef, $tempname) = do{ $^W=0; File::Temp::tempfile(OPEN=>0)};
-END{ unlink $tempname or die "Could not unlink '$tempname': $!" }
+END{ close(TMP); unlink $tempname or die "Could not unlink '$tempname': $!" }
 
 #Print the heredoc in 08-redirect.pl to temp file via redirection
 my $q = q['];
-$q = q["] if $^O =~ /MSWin32|cygwin/;
+$q = q["] if $^O =~ /MSWin32/;
 system qq($^X -Mblib -MIO::Pager::Page -e $q require q[t/08-redirect.pl]; print \$txt $q >$tempname);
 
 open(TMP, $tempname) or die "Could not open tmpfile: $!\n";

@@ -1,14 +1,18 @@
 Revision history for Perl extension IO::Pager.
 
-0.30	Wed Jul 11 2012
+0.30	Tue Sep 04 2012
+	Implement feature request #78270 to include support say
+
+	Preserve layers of passed hilehandle on instantiation.
+
+	Fixed tests under Win32 & cygwin, bug #75181.
+
 	Swap IO::Pager:new and ::open, alter subclass::open to
 	remove unnecessary level of subroutine calls
 
 	Return IO::Handle objects when not connected to a TTY for
 	transparent use of IO::Pager when programming OO.
-
-0.25	Tue Jul 10 2012
-	Implement feature request #78270 to include support say
+	NOTE: This is broken, see ::less in TODO
 
 0.24	Sat Feb 18 2012 
 	Fixed bug #74691, tests fail if CPANTS folk don't have a perl in PATH!
