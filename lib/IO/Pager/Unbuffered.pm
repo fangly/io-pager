@@ -8,15 +8,16 @@ use SelectSaver;
 
 sub new(;$) {  # [FH], procedural
   my($class, $tied_fh);
-
   eval { ($class, $tied_fh) = &IO::Pager::_init };
+
   #We're not on a TTY so...
   if( defined($class) && $class eq '0' or $@ =~ '!TTY' ){
       #...leave filehandle alone if procedural
       return $_[1] if defined($_[2]) && $_[2] eq 'procedural';
 
       #...fall back to IO::Handle for transparent OO programming
-      eval "require IO::Handle" && return new IO::Handle;
+      eval "require IO::Pager::less" or die $@;
+      return IO::Pager::less::new($_[1], 0);
   }
   $!=$@, return 0 if $@ =~ 'pipe';
 
@@ -31,7 +32,7 @@ sub new(;$) {  # [FH], procedural
 #Punt to base, preserving FH ($_[0]) for pass by reference to gensym
 sub open(;$) { # [FH]
 #  IO::Pager::open($_[0], 'IO::Pager::Unbuffered');
-  &new('IO::Pager::procedural', $_[0], 'procedural');
+  &new(undef, $_[0], 'procedural');
 }
 
 

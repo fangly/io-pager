@@ -5,6 +5,7 @@ lib/IO/Pager.pm
 lib/IO/Pager/Buffered.pm
 lib/IO/Pager/Page.pm
 lib/IO/Pager/Unbuffered.pm
+lib/IO/Pager/less.pm
 README
 TODO
 t.pl
