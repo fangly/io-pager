@@ -1,5 +1,5 @@
 package IO::Pager::Unbuffered;
-our $VERSION = 0.30;
+our $VERSION = 0.31;
 
 use strict;
 use base qw( IO::Pager );
@@ -16,7 +16,8 @@ sub new(;$) {  # [FH], procedural
       return $_[1] if defined($_[2]) && $_[2] eq 'procedural';
 
       #...fall back to IO::Handle for transparent OO programming
-      eval "require IO::Handle" && return new IO::Handle;
+      eval "require IO::Handle" &&
+	  return IO::Handle->new_from_fd(fileno($_[1]), 'w');
   }
   $!=$@, return 0 if $@ =~ 'pipe';
 

@@ -14,6 +14,10 @@ system qq($^X t/11-redirect-oo.pl >$tempname);
 open(TMP, $tempname) or die "Could not open tmpfile: $!\n";
 my $slurp = do{ undef $/; <TMP> };
 
+#XXX Perl on Windoze lamely appends an extra newline
+#Experimentation with C<use open> layers failed to find a suitable remedy
+chop($slurp) if $^O =~ /MSWin32/;
+
 our $txt; require 't/08-redirect.pl';
 ok($txt eq $slurp, 'Redirection with OO');
 
