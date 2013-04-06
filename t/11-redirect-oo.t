@@ -30,6 +30,10 @@ system qq($^X -Mblib t/11-redirect-oo.pl >$tempname);
 warn qq($^X -Mblib t/11-redirect-oo.pl >$tempname);
 
 $slurp = do{ undef $/; <$temp> };
+#XXX Perl on Windoze lamely appends an extra newline
+#Experimentation with C<use open> layers failed to find a suitable remedy
+chop($slurp) if $^O =~ /MSWin32/;
+
 our $txt; require 't/08-redirect.pl';
 ok($txt eq $slurp, 'Redirection with OO');
 
