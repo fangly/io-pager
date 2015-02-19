@@ -16,9 +16,12 @@ my $slurp = do{ undef $/; <TMP> };
 
 #XXX Perl on Windoze lamely appends an extra newline
 #Experimentation with C<use open> layers failed to find a suitable remedy
-chop($slurp) if $^O =~ /MSWin32/;
+if( $^O =~ /MSWin32/ ){
+  diag("If this test fails on Windows and all others pass, things are probably good.");
+  $slurp =~ s/\r\n$//;
+}
 
 our $txt; require 't/08-redirect.pl';
-ok($txt eq $slurp, 'Redirection with OO');
+cmp_ok($txt, 'eq', $slurp, 'Redirection with OO');
 
 done_testing;
