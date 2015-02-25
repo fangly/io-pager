@@ -6,7 +6,7 @@ use base qw( IO::Pager );
 use SelectSaver;
 
 
-sub new(;$) {  # [FH]
+sub new(;$) {  # [FH], procedural
   my($class, $tied_fh);
 
   eval { ($class, $tied_fh) = &IO::Pager::_init };
@@ -27,7 +27,7 @@ sub new(;$) {  # [FH]
 #Punt to base, preserving FH ($_[0]) for pass by reference to gensym
 sub open(;$) { # [FH]
 #  IO::Pager::open($_[0], 'IO::Pager::Buffered');
-  &new('IO::Pager::Buffered', $_[0]);
+  &new('IO::Pager::Buffered', $_[0], 'procedural');
 }
 
 

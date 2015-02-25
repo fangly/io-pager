@@ -78,25 +78,37 @@ BEGIN { # Set the $ENV{PAGER} to something reasonable
 
 #Factory
 sub open(*;$@) { # FH, [MODE], [CLASS]
-    &new(undef, @_, 'procedural');
+#    &new(undef, @_, undef, 'procedural'); #unary placeholder
+  my $args = {procedural=>1};
+  $args->{mode}    =pop if scalar(@_) == 3;
+  $args->{subclass}=pop if scalar(@_) == 2;
+  &new(undef, @_, $args);
 }
 
 #Alternate entrance: drop class but leave FH, subclass
 sub new(*;$@) { # FH, [MODE], [CLASS]
   shift;
 
-  my $mode = splice(@_, 1, 1) if $_[1] =~ /^:/;
+  my %args;
+  if( ref($_[-1]) eq 'HASH' ){
+    %args = %{pop()};
+    warn "REMAINDER? (@_)", scalar @_;
+    push(@_, $args{procedural});
+  }
+  else{
+    $args{mode} = splice(@_, 1, 1) if $_[1] =~ /^:/;
+    $args{subclass} = pop if exists($_[1]);
+  }
 
   #Leave filehandle in @_ for pass by reference to allow gensym
-  my $subclass = $_[1] if exists($_[1]);
-  $subclass ||= 'IO::Pager::Unbuffered';
-  $subclass =~ s/^(?!IO::Pager::)/IO::Pager::/;
-  eval "require $subclass" or die "Could not load $subclass: $@\n";
-  my $token = $subclass->new($_[0]);
+  $args{subclass} ||= 'IO::Pager::Unbuffered';
+  $args{subclass} =~ s/^(?!IO::Pager::)/IO::Pager::/;
+  eval "require $args{subclass}" or die "Could not load $args{subclass}: $@\n";
+  my $token = $args{subclass}->new(@_);
 
-  if( defined($mode) ){
-    $mode =~ s/^\|-//;
-    $token->BINMODE($mode);
+  if( defined($args{mode}) ){
+    $args{mode} =~ s/^\|-//;
+    $token->BINMODE($args{mode});
   }
   return $token;
 }
@@ -172,6 +184,7 @@ sub EOF {
   }
 
   $SIG{PIPE} = sub { $SIGPIPE = 1 unless $ENV{IP_EOF};
+		     CORE::close($self->{real_fh});
 		     waitpid($self->{child}, WNOHANG);
 		     CORE::open($self->{real_fh}, '>&1'); };
   return $SIGPIPE;
@@ -271,7 +284,7 @@ IO::Pager - Select a pager and pipe text to it if destination is a TTY
     # open FILEHANDLE,EXPR               # Specify subclass
     my $token = IO::Pager::open *STDOUT,  'Unbuffered';
 
-    # open FILEHANDLE,MODE,EXPR          # 
+    # open FILEHANDLE,MODE,EXPR          # En lieu of a separate binmode()
     my $token = IO::Pager::open *STDOUT, '|-:utf8', 'Unbuffered';
 
 
@@ -392,6 +405,10 @@ more accurately, the filehandle is reopened to file descriptor 1.
     ...
   } until( eof(*STDOUT) );
   print "Cleaning up after our child before terminating."
+
+If using eof() with L<less>, especially when IP_EOF is set, you may want to
+use the I<--no-init> option by setting I<$ENV{IP_EOF}='X'> to prevent the
+paged output from being erased when the pager exits.
 
 =head2 print( FILEHANDLE LIST )
 
