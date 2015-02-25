@@ -8,7 +8,7 @@ no warnings; $^W = 0; #Avoid: Can't exec "/dev/null": Permission denied
 use IO::Pager;
 
 SKIP: {
-  skip("Skiping because Windows has to be different^Wdifficult", 1)
+  skip("Skipping because Windows has to be different^Wdifficult", 1)
     if $^O =~ /MSWin32|cygwin/;
 
   undef $ENV{PAGER};

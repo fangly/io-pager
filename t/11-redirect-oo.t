@@ -14,14 +14,14 @@ system qq($^X t/11-redirect-oo.pl >$tempname);
 open(TMP, $tempname) or die "Could not open tmpfile: $!\n";
 my $slurp = do{ undef $/; <TMP> };
 
-#XXX Perl on Windoze lamely appends an extra newline
-#Experimentation with C<use open> layers failed to find a suitable remedy
+#Special case for CMD lameness, see diag below
 if( $^O =~ /MSWin32/ ){
-  diag("If this test fails on Windows and all others pass, things are probably good.");
   $slurp =~ s/\r\n$//;
 }
 
 our $txt; require 't/08-redirect.pl';
-cmp_ok($txt, 'eq', $slurp, 'Redirection with OO');
+cmp_ok($txt, 'eq', $slurp, 'Redirection with OO') || $^O =~ /MSWin32/ &&
+  diag("If this test fails on Windows and all others pass, things are probably good. CMD appends an extra newline to redirected output.");
+;
 
 done_testing;

@@ -1,8 +1,6 @@
 package IO::Pager::Page;
 
-use strict;
-
-our $VERSION = 0.16;
+our $VERSION = 0.32;
 
 
 # The meat
@@ -18,7 +16,7 @@ BEGIN {
 # Gravy
 sub import {
   my ($self, %opt) = @_;
-  $SIG{PIPE} = sub{ exit 0; } if $opt{hush};
+  $SIG{PIPE} = 'IGNORE' if $opt{hush};
 }
 
 "Badee badee badee that's all folks!";
@@ -69,7 +67,7 @@ This module inspired by Monte Mitzelfelt's IO::Page 0.02
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2003-2012 Jerrad Pierce
+Copyright (C) 2003-2015 Jerrad Pierce
 
 =over
 

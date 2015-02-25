@@ -2,32 +2,21 @@ Important things here and in code flagged with XXX
 
 0.30
 	Create a tee sub-class/layer?
+	       recommend PerlIO::Util's :tee in the dox, but provide
+	       a simplified (single file?) pure-perl implementation too,
+	       via a maethod to wrap an existing IO::Pager handle? (0.32)
 
-	Complete the ::less subclass so that non-interactive fallback
-	for OO interaction works. (pagerless branch in git)
+	XXX Complete the ::less subclass to lump all non-interactive
+	fallback behavior together? (See pagerless branch in git)
 
 0.20
 	"Fix" multi-pseudo-STDOUT disabled in 09-open.t implementation?
 
 	Alter tests to cover all invocation schemes,
-	and document location of each in matrix?
+	and document location of each in matrix OR use table-driven tests?
 		new/open each class
 		scalar vs. glob vs. OO
 		(non-)fully qualified subclass name
-
-	Complicate IO::Pager::new code to make it smartly use first
-	arg as FH or subclass and remove need for ungainly undef?
-
-	"3-arg open" with layer?
-
-0.10
-	XXX Implement eof?
-		To indicate SIGPIPE? ...handler localization difficulties (.16)
-
-	Hijack something to return filehandle(?), child (DONE 0.24), etc.
-	...but this amounts to nothing more than showing our private parts?
-		Alas tied FH have no STAT method to pass child as inode (.16)
-		Accessor for pager too? (.21)
 
 0.02
 	Implement IO::Pager::Callback, just because it sounds cool?

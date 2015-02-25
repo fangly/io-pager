@@ -1,5 +1,5 @@
 package IO::Pager;
-our $VERSION = 0.31; #Really 0.30
+our $VERSION = 0.32; #Really 0.32
 
 use 5.008; #At least, for decent perlio, and other modernisms
 use strict;
@@ -11,6 +11,7 @@ use Symbol;
 
 use overload '+' => "PID", bool=> "PID";
 
+our $SIGPIPE;
 
 sub find_pager {
   # Return the name (or path) of a pager that IO::Pager can use
@@ -76,20 +77,28 @@ BEGIN { # Set the $ENV{PAGER} to something reasonable
 
 
 #Factory
-sub open(;$$) { # [FH], [CLASS]
+sub open(*;$@) { # FH, [MODE], [CLASS]
     &new(undef, @_, 'procedural');
 }
 
 #Alternate entrance: drop class but leave FH, subclass
-sub new(;$$) { # [FH], [CLASS]
+sub new(*;$@) { # FH, [MODE], [CLASS]
   shift;
+
+  my $mode = splice(@_, 1, 1) if $_[1] =~ /^:/;
 
   #Leave filehandle in @_ for pass by reference to allow gensym
   my $subclass = $_[1] if exists($_[1]);
   $subclass ||= 'IO::Pager::Unbuffered';
   $subclass =~ s/^(?!IO::Pager::)/IO::Pager::/;
   eval "require $subclass" or die "Could not load $subclass: $@\n";
-  $subclass->new($_[0]);
+  my $token = $subclass->new($_[0]);
+
+  if( defined($mode) ){
+    $mode =~ s/^\|-//;
+    $token->BINMODE($mode);
+  }
+  return $token;
 }
 
 
@@ -110,8 +119,8 @@ sub _init{ # CLASS, [FH] ## Note reversal of order due to CLASS from new()
     }
   }
 
-  # XXX This allows us to have multiple pseudo-STDOUT
-#  return 0 unless -t STDOUT;
+  #XXX This allows us to have multiple pseudo-STDOUT
+  #return 0 unless -t STDOUT;
 
   return ($_[0], $_[1]);
 }
@@ -125,7 +134,7 @@ sub TIEHANDLE {
     die "The PAGER environment variable is not defined, you may need to set it manually.";
   }
   my($real_fh, $child);
-  if ( $child = CORE::open($real_fh, "| $PAGER") ){
+  if ( $child = CORE::open($real_fh, '|-', $PAGER) ){
     my @oLayers = PerlIO::get_layers($tied_fh, details=>1, output=>1);
     my $layers = '';
     for(my $i=0;$i<$#oLayers;$i+=3){
@@ -151,6 +160,21 @@ sub TIEHANDLE {
 sub BINMODE {
   my ($self, $layer) = @_;
   CORE::binmode($self->{real_fh}, $layer||':raw');
+}
+
+sub WNOHANG();
+sub EOF {
+  my $self = shift;
+
+  unless( defined($SIGPIPE) ){
+    eval 'use POSIX ":sys_wait_h";';
+    $SIGPIPE = 0;
+  }
+
+  $SIG{PIPE} = sub { $SIGPIPE = 1 unless $ENV{IP_EOF};
+		     waitpid($self->{child}, WNOHANG);
+		     CORE::open($self->{real_fh}, '>&1'); };
+  return $SIGPIPE;
 }
 
 
@@ -198,7 +222,7 @@ sub PID{
 
 
 #Provide lowercase aliases for accessors
-foreach my $method ( qw(BINMODE CLOSE PRINT PRINTF TELL WRITE PID) ){
+foreach my $method ( qw(BINMODE CLOSE EOF PRINT PRINTF TELL WRITE PID) ){
   no strict 'refs';
   *{lc($method)} = \&{$method};
 }
@@ -217,13 +241,38 @@ IO::Pager - Select a pager and pipe text to it if destination is a TTY
   # Select an appropriate pager and set the PAGER environment variable
   use IO::Pager;
 
-  # Optionally, pipe output to it
+  # TIMTOWTDI Object-oriented
   {
-    # TIMTOWTDI, not an exhaustive list but you can infer the others
-    my $token =     IO::Pager::open *STDOUT; # Unbuffered is  default subclass
-    my $token = new IO::Pager       *STDOUT,  'Unbuffered'; # Specify subclass
-    my $token =     IO::Pager::Unbuffered::open *STDOUT;    # Must 'use' class!
-    my $token = new IO::Pager::Unbuffered       *STDOUT;    # Must 'use' class!
+    # open()                           # Use all the defaults.
+    my $object = new IO::Pager;
+
+    # open FILEHANDLE                  # Unbuffered is default subclass
+    my $object = new IO::Pager *STDOUT;
+
+    # open FILEHANDLE,EXPR             # Specify subclass
+    my $object = new IO::Pager *STDOUT,  'Unbuffered';
+
+    # Direct subclass instantiation    # FH is optional
+    use IO::Pager::Unbuffered;
+    my $object = new IO::Pager::Unbuffered  *STDOUT;
+
+
+    $object->print("OO shiny...\n");
+    print "Some other text sent to STODUT, perhaps from a foreign routine."
+
+    # $object passes out of scope and filehandle is automagically closed
+  }
+
+  # TIMTOWTDI Procedural
+  {
+    # open FILEHANDLE                    # Unbuffered is default subclass
+    my $token = IO::Pager::open *STDOUT;
+
+    # open FILEHANDLE,EXPR               # Specify subclass
+    my $token = IO::Pager::open *STDOUT,  'Unbuffered';
+
+    # open FILEHANDLE,MODE,EXPR          # 
+    my $token = IO::Pager::open *STDOUT, '|-:utf8', 'Unbuffered';
 
 
     print <<"  HEREDOC" ;
@@ -236,16 +285,10 @@ IO::Pager - Select a pager and pipe text to it if destination is a TTY
 
   {
     # You can also use scalar filehandles...
-    my $token = IO::Pager::open($FH) or warn($!);
+    my $token = IO::Pager::open(my $FH) or warn($!); XXX
     print $FH "No globs or barewords for us thanks!\n";
   }
 
-  {
-    # ...or an object interface
-    my $token = new IO::Pager::Buffered;
-
-    $token->print("OO shiny...\n");
-  }
 
 =head1 DESCRIPTION
 
@@ -261,12 +304,12 @@ YMMV. See the appropriate subclass for implementation specific details.
 
 =head1 METHODS
 
-=head2 new( [FILEHANDLE], [SUBCLASS] )
+=head2 new( FILEHANDLE, [MODE], [SUBCLASS] )
 
 Almost identical to open, except that you will get an L<IO::Handle>
-back if there's no TTY to allow for IO::Pager agnostic programming.
+back if there's no TTY to allow for IO::Pager-agnostic programming.
 
-=head2 open( [FILEHANDLE], [SUBCLASS] )
+=head2 open( FILEHANDLE, [MODE], [SUBCLASS] )
 
 Instantiate a new IO::Pager, which will paginate output sent to
 FILEHANDLE if interacting with a TTY.
@@ -328,16 +371,33 @@ as they pass out of scope e.g;
   }
   #The string "I like trains" is flushed to the pager, and the handle closed
 
-=head2 binmode( FILEHANDLE )
+=head2 binmode( FILEHANDLE, [LAYER] )
 
 Used to set the I/O layer a.k.a. discipline of a filehandle,
 such as C<':utf8'> for UTF-8 encoding.
 
-=head2 print ( FILEHANDLE LIST )
+=head2 eof( FILEHANDLE )
+
+Used in the eval-until-eof idiom below, I<IO::Pager> will handle broken pipes
+from deceased children for you in one of two ways. If I<$ENV{IP_EOF}> is
+false then program flow will pass out of the loop on I<SIGPIPE>, this is the
+default. If the variable is true, then the program continues running with
+output for the previously paged filehandle directed to the I<STDOUT> stream;
+more accurately, the filehandle is reopened to file descriptor 1.
+
+  use IO::Pager::Page; #or whichever you prefer;
+  ...
+  eval{
+    say "Producing prodigious portions of product";
+    ...
+  } until( eof(*STDOUT) );
+  print "Cleaning up after our child before terminating."
+
+=head2 print( FILEHANDLE LIST )
 
 print() to the filehandle.
 
-=head2 printf ( FILEHANDLE FORMAT, LIST )
+=head2 printf( FILEHANDLE FORMAT, LIST )
 
 printf() to the filehandle.
 
@@ -348,6 +408,10 @@ syswrite() to the filehandle.
 =head1 ENVIRONMENT
 
 =over
+
+=item IP_EOF
+
+Controls IO:Pager behavior when C<eof> is used.
 
 =item PAGER
 
@@ -424,7 +488,7 @@ This module was inspired by Monte Mitzelfelt's IO::Page 0.02
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2003-2012 Jerrad Pierce
+Copyright (C) 2003-2015 Jerrad Pierce
 
 =over
 

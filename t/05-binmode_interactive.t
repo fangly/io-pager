@@ -14,11 +14,11 @@ SKIP: {
   my $warnings;
   eval {
     # Promote warnings to errors so we can catch them
-    $SIG{__WARN__} = sub { $warnings .= shift };
+    local $SIG{__WARN__} = sub { $warnings .= shift };
 
     # Stream unicode in a pager
-    local $STDOUT = new IO::Pager *BOB, 'IO::Pager::Buffered';
-    binmode BOB, ":utf8";
+    local $STDOUT = new IO::Pager *BOB, ':utf8', 'IO::Pager::Buffered';
+
 
     printf BOB "Unicode Z-inverted carat: \x{17D}\n"; #Ž
     printf BOB "Unicode Copyright < Copyleft: \x{A9} < \x{2184}\x{20DD}\n"; #© < ↄ⃝
