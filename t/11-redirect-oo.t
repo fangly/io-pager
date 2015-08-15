@@ -16,12 +16,15 @@ my $slurp = do{ undef $/; <TMP> };
 
 #Special case for CMD lameness, see diag below
 if( $^O =~ /MSWin32/ ){
-  $slurp =~ s/\r\n$//;
+  $slurp =~ s/\r\n\z//;
 }
 
 our $txt; require 't/08-redirect.pl';
-cmp_ok($txt, 'eq', $slurp, 'Redirection with OO') || $^O =~ /MSWin32/ &&
-  diag("If this test fails on Windows and all others pass, things are probably good. CMD appends an extra newline to redirected output.");
-;
+# Special case for CMD appending extra newlines to redirected output.
+if( $^O =~ /MSWin32/ ){
+  $txt =~ s/\s+\z//ms;
+  $slurp =~ s/\s+\z//ms;
+}
+cmp_ok($txt, 'eq', $slurp, 'Redirection with OO');
 
 done_testing;
