@@ -16,7 +16,7 @@ my $slurp = do{ undef $/; <TMP> };
 
 #Special case for CMD lameness, see diag below
 if( $^O =~ /MSWin32/ ){
-  $slurp =~ s/\r\n$//;
+  $slurp =~ s/\n$//;
 }
 
 our $txt; require 't/08-redirect.pl';
