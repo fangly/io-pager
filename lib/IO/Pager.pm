@@ -1,5 +1,5 @@
 package IO::Pager;
-our $VERSION = 0.32; #Really 0.32
+our $VERSION = 0.34; #Really 0.34
 
 use 5.008; #At least, for decent perlio, and other modernisms
 use strict;
@@ -78,10 +78,9 @@ BEGIN { # Set the $ENV{PAGER} to something reasonable
 
 #Factory
 sub open(*;$@) { # FH, [MODE], [CLASS]
-#    &new(undef, @_, undef, 'procedural'); #unary placeholder
   my $args = {procedural=>1};
-  $args->{mode}    =pop if scalar(@_) == 3;
-  $args->{subclass}=pop if scalar(@_) == 2;
+  $args->{mode} = splice(@_, 1, 1) if scalar(@_) == 3;
+  $args->{subclass} = pop if scalar(@_) == 2;
   &new(undef, @_, $args);
 }
 

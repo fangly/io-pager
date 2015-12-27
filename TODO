@@ -6,6 +6,8 @@ Important things here and in code flagged with XXX
 	       a simplified (single file?) pure-perl implementation too,
 	       via a maethod to wrap an existing IO::Pager handle? (0.32)
 
+	       Might simplify new/open 'procedural' arg-passing mess? (0.33+)
+
 	XXX Complete the ::less subclass to lump all non-interactive
 	fallback behavior together? (See pagerless branch in git)
 

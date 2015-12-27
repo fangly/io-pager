@@ -14,14 +14,15 @@ system qq($^X t/11-redirect-oo.pl >$tempname);
 open(TMP, $tempname) or die "Could not open tmpfile: $!\n";
 my $slurp = do{ undef $/; <TMP> };
 
-#Special case for CMD lameness, see diag below
-if( $^O =~ /MSWin32/ ){
-  $slurp =~ s/\r\n$//;
-}
+TODO: {
+  #Special case for CMD lameness, see diag below
+  if( $^O =~ /MSWin32/ ){
+    $slurp =~ s/\r\n$//;
+  }
 
-our $txt; require 't/08-redirect.pl';
-cmp_ok($txt, 'eq', $slurp, 'Redirection with OO') || $^O =~ /MSWin32/ &&
-  diag("If this test fails on Windows and all others pass, things are probably good. CMD appends an extra newline to redirected output.");
-;
+  our $txt; require 't/08-redirect.pl';
+  cmp_ok($txt, 'eq', $slurp, 'Redirection with OO') || $^O =~ /MSWin32/ &&
+    diag("If this test fails on Windows and all others pass, things are probably good. CMD appends an extra newline to redirected output.");
+}
 
 done_testing;
