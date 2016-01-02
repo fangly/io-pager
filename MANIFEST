@@ -8,6 +8,7 @@ lib/IO/Pager/Unbuffered.pm
 README
 TODO
 .proverc
+.travis.yml
 t.pl
 t/01-load.t
 t/02-which.t
