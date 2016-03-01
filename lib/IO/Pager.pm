@@ -94,7 +94,7 @@ sub new(*;$@) { # FH, [MODE], [CLASS]
     warn "REMAINDER? (@_)", scalar @_;
     push(@_, $args{procedural});
   }
-  else{
+  elsif (defined $_[1]) {
     $args{mode} = splice(@_, 1, 1) if $_[1] =~ /^:/;
     $args{subclass} = pop if exists($_[1]);
   }

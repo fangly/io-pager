@@ -10,6 +10,7 @@ WriteMakefile(
        'Env'            => 0,
        'Exporter'       => 0,
        'File::Temp'     => 0,
+       'Test::NoWarnings' => 0,
     },
     'PREREQ_PM'         => {
        'base'           => 0,
