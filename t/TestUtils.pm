@@ -5,15 +5,15 @@ use warnings;
 use Config;
 use Test::More;
 use Env qw( HARNESS_ACTIVE );
-use ExtUtils::MakeMaker qw( prompt );
 
-use base qw( Exporter );
-our @EXPORT;
 BEGIN {
-   @EXPORT  = qw{
+  use ExtUtils::MakeMaker qw( prompt );
+  use base qw( Exporter );
+  our @EXPORT  = qw{
       skip_interactive
       skip_old_perl
       skip_no_file_which
+      skip_no_tty
       skip_not_in_path
       is_no
       is_yes
@@ -24,7 +24,7 @@ BEGIN {
 }
 
 sub skip_interactive {
-  skip "Run 'perl -Mblib t.pl' to perform interactive tests.", 1 if $HARNESS_ACTIVE;
+  skip "!! Run 'perl -Mblib test.pl interactive' to perform interactive tests/demonstrations of the module's abilities.", 1 if $HARNESS_ACTIVE;
 }
 
 sub skip_old_perl {
@@ -33,6 +33,11 @@ sub skip_old_perl {
 
 sub skip_no_file_which {
   skip "This test requires File::Which.", 1 if not eval { require File::Which };
+}
+
+sub skip_no_tty {
+  skip "/dev/tty cannot be opened.", 1 if not open(my $fh, '<', '/dev/tty');
+  close $fh;
 }
 
 sub skip_not_in_path {

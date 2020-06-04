@@ -1,5 +1,5 @@
 package IO::Pager;
-our $VERSION = 0.35; #Really 0.34
+our $VERSION = "1.01"; #Untouched since 1.00
 
 use 5.008; #At least, for decent perlio, and other modernisms
 use strict;
@@ -12,10 +12,15 @@ use Symbol;
 use overload '+' => "PID", bool=> "PID";
 
 our $SIGPIPE;
+my $oldPAGER = $PAGER;
 
 sub find_pager {
   # Return the name (or path) of a pager that IO::Pager can use
   my $io_pager;
+
+  #Permit explicit use of pure perl pager
+  local $_ = 'IO::Pager::less';
+  return $_ if $_[0] eq $_ or $PAGER eq $_;
 
   # Use File::Which if available (strongly recommended)
   my $which = eval { require File::Which };
@@ -41,7 +46,7 @@ sub find_pager {
     $io_pager = _check_pagers(\@pagers, $which );
   }
 
-  # If all else fails, default to more
+  # If all else fails, default to more (actually IO::Pager::less first)
   $io_pager ||= 'more';
 
   return $io_pager;
@@ -73,6 +78,13 @@ sub _check_pagers {
 #Should have this as first block for clarity, but not with its use of a sub :-/
 BEGIN { # Set the $ENV{PAGER} to something reasonable
   $PAGER = find_pager();
+  
+  if( ($PAGER =~ 'more' and $oldPAGER ne 'more') or
+       $PAGER eq 'IO::Pager::less' ){
+    my $io_pager = $PAGER;
+    eval "use IO::Pager::less";
+    $PAGER = $io_pager if $@ or not defined $PAGER;
+  }
 }
 
 
@@ -91,10 +103,10 @@ sub new(*;$@) { # FH, [MODE], [CLASS]
   my %args;
   if( ref($_[-1]) eq 'HASH' ){
     %args = %{pop()};
-    warn "REMAINDER? (@_)", scalar @_;
+    #warn "REMAINDER? (@_)", scalar @_;
     push(@_, $args{procedural});
   }
-  else{
+  elsif( defined($_[1]) ){
     $args{mode} = splice(@_, 1, 1) if $_[1] =~ /^:/;
     $args{subclass} = pop if exists($_[1]);
   }
@@ -144,7 +156,11 @@ sub TIEHANDLE {
   unless ( $PAGER ){
     die "The PAGER environment variable is not defined, you may need to set it manually.";
   }
-  my($real_fh, $child);
+  my($real_fh, $child, $dupe_fh);
+# XXX What about localized GLOBs?!
+#  if( $tied_fh =~ /\*(?:\w+::)?STD(?:OUT|ERR)$/ ){
+#      open($dupe_fh, '>&', $tied_fh) or warn "Unable to dupe $tied_fh";
+#  }
   if ( $child = CORE::open($real_fh, '|-', $PAGER) ){
     my @oLayers = PerlIO::get_layers($tied_fh, details=>1, output=>1);
     my $layers = '';
@@ -162,6 +178,8 @@ sub TIEHANDLE {
   }
   return bless {
                 'real_fh' => $real_fh,
+#		'dupe_fh' => $dupe_fh,
+		'tied_fh' => "$tied_fh", #Avoid self-reference leak
                 'child'   => $child,
 		'pager'   => $PAGER,
                }, $class;
@@ -170,7 +188,12 @@ sub TIEHANDLE {
 
 sub BINMODE {
   my ($self, $layer) = @_;
-  CORE::binmode($self->{real_fh}, $layer||':raw');
+  if( $layer =~ /^:LOG\((>{0,2})(.*)\)$/ ){
+    CORE::open($self->{LOG}, $1||'>', $2||"$$.log") or die $!;
+  }
+  else{
+    CORE::binmode($self->{real_fh}, $layer||':raw');
+  }
 }
 
 sub WNOHANG();
@@ -185,13 +208,17 @@ sub EOF {
   $SIG{PIPE} = sub { $SIGPIPE = 1 unless $ENV{IP_EOF};
 		     CORE::close($self->{real_fh});
 		     waitpid($self->{child}, WNOHANG);
-		     CORE::open($self->{real_fh}, '>&1'); };
+		     CORE::open($self->{real_fh}, '>&1');
+
+		     close($self->{LOG});
+		   };
   return $SIGPIPE;
 }
 
 
 sub PRINT {
   my ($self, @args) = @_;
+  CORE::print {$self->{LOG}} @args if exists($self->{LOG});
   CORE::print {$self->{real_fh}} @args or die "Could not print to PAGER: $!\n";
 }
 
@@ -218,9 +245,15 @@ sub TELL {
 }
 
 
+sub FILENO {
+  CORE::fileno($_[0]->{real_fh});
+}
+
 sub CLOSE {
   my ($self) = @_;
   CORE::close($self->{real_fh});
+#  untie($self->{tied_fh});
+#  *{$self->{tied_fh}} = *{$self->{dupe_fh}};
 }
 
 *DESTROY = \&CLOSE;
@@ -243,6 +276,7 @@ foreach my $method ( qw(BINMODE CLOSE EOF PRINT PRINTF TELL WRITE PID) ){
 1;
 
 __END__
+=pod
 
 =head1 NAME
 
@@ -269,7 +303,7 @@ IO::Pager - Select a pager and pipe text to it if destination is a TTY
     my $object = new IO::Pager::Unbuffered  *STDOUT;
 
 
-    $object->print("OO shiny...\n");
+    $object->print("OO shiny...\n") while 1;
     print "Some other text sent to STODUT, perhaps from a foreign routine."
 
     # $object passes out of scope and filehandle is automagically closed
@@ -298,7 +332,7 @@ IO::Pager - Select a pager and pipe text to it if destination is a TTY
   {
     # You can also use scalar filehandles...
     my $token = IO::Pager::open(my $FH) or warn($!); XXX
-    print $FH "No globs or barewords for us thanks!\n";
+    print $FH "No globs or barewords for us thanks!\n" while 1;
   }
 
 
@@ -388,6 +422,27 @@ as they pass out of scope e.g;
 Used to set the I/O layer a.k.a. discipline of a filehandle,
 such as C<':utf8'> for UTF-8 encoding.
 
+=head3 :LOG([>>FILE])
+
+IO::Pager implements a pseudo-IO-layer for capturing output and sending it
+to a file, similar to L<tee(1)>. Although it is limited to one file, this
+feature is pure-perl and adds no dependencies.
+
+You may indicate what file to store in parentheses, otherwise the default is
+C<$$.log>. You may also use an implicit (no indicator) or explicit (I<E<gt>>)
+indicator to overwrite an existing file, or an explicit (I<E<gt>E<gt>>) for
+appending to a log file. For example:
+
+    binmode(*STDOUT, ':LOG(clobber.log)');
+    ...
+    $STDOUT->binmode(':LOG(>>noclobber.log)');
+
+For full tee-style support, use L<PerlIO::Util> like so:
+
+    binmode(*STDOUT, ":tee(TH)");
+    #OR
+    $STDOUT->binmode(':tee(TH)');
+
 =head2 eof( FILEHANDLE )
 
 Used in the eval-until-eof idiom below, I<IO::Pager> will handle broken pipes
@@ -408,6 +463,10 @@ more accurately, the filehandle is reopened to file descriptor 1.
 If using eof() with L<less>, especially when IP_EOF is set, you may want to
 use the I<--no-init> option by setting I<$ENV{IP_EOF}='X'> to prevent the
 paged output from being erased when the pager exits.
+
+=head2 fileno( FILEHANDLE )
+
+Return the filehandle number of the write-only pipe to the pager.
 
 =head2 print( FILEHANDLE LIST )
 
@@ -454,6 +513,8 @@ executable.
 
 =item /usr/bin/less
 
+=item L<IO::Pager::Perl> as C<tp> via L<IO::Pager::less>
+
 =item /usr/bin/more
 
 =back
@@ -480,19 +541,44 @@ Try the standard, hardcoded paths in L</FILES>.
 If File::Which is available, use the first pager possible amongst
 C<less>, C<most>, C<w3m>, C<lv>, C<pg> and L<more>.
 
-=item 4. more
+=item 4. Term::Pager via IO::Pager::Perl
+
+=cut
+
+If instantiating an IO::Pager object and Term::Pager version 1.5 or greater is
+available, L<IO::Pager::Perl> will be used.
+
+=pod
+You may also set $ENV{PAGER} to
+Term::Pager to select this extensible, pure perl pager for display.
+
+=item 5. more
 
 Set I<PAGER> to C<more>, and cross our fingers.
 
 =back
 
-Steps 1, 3 and 4 rely upon the I<PATH> environment variable.
+Steps 1, 3 and 5 rely upon the I<PATH> environment variable.
+
+=head1 CAVEATS
+
+You probably want to do something with SIGPIPE eg;
+
+  eval {
+    local $SIG{PIPE} = sub { die };
+    local $STDOUT = IO::Pager::open(*STDOUT);
+
+    while (1) {
+      # Do something
+    }
+  }
+
+  # Do something else
 
 =head1 SEE ALSO
 
-L<IO::Pager::Buffered>, L<IO::Pager::Unbuffered>, L<IO::Pager::Page>,
-
-L<IO::Page>, L<Meta::Tool::Less>
+L<IO::Pager::Buffered>, L<IO::Pager::Unbuffered>, L<I::Pager::Perl>,
+L<IO::Pager::Page>, L<IO::Page>, L<Meta::Tool::Less>
 
 =head1 AUTHOR
 
@@ -504,7 +590,7 @@ This module was inspired by Monte Mitzelfelt's IO::Page 0.02
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2003-2015 Jerrad Pierce
+Copyright (C) 2003-2019 Jerrad Pierce
 
 =over
 

@@ -1,7 +1,8 @@
 use strict;
 use warnings;
-use Test::More;
-use t::TestUtils;
+use Test::More 0.88;
+require './t/TestUtils.pm';
+t::TestUtils->import();
 
 # Test that all modules load properly
 

@@ -1,7 +1,8 @@
 use strict;
 use warnings;
-use Test::More;
-use t::TestUtils;
+use Test::More 0.88;
+require './t/TestUtils.pm';
+t::TestUtils->import();
 use Env qw( PAGER );
 
 # Test that a reasonable pager can be found
@@ -15,7 +16,7 @@ SKIP: {
   diag "PAGER set by IO::Pager: '".($PAGER||'')."'\n";
 
   select STDERR;
-  my $A = prompt "\nIs this reasonable? [Yn]";
+  my $A = prompt("\nIs this reasonable? [Yn]");
   ok is_yes($A), 'Found a reasonable pager';
 }
 

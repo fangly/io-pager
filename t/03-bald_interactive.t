@@ -1,7 +1,8 @@
 use strict;
 use warnings;
-use Test::More;
-use t::TestUtils;
+use Test::More 0.88;
+require './t/TestUtils.pm';
+t::TestUtils->import();
 
 # Test unbuffered paging
 
@@ -16,7 +17,7 @@ SKIP: {
        "\n";
 
   select STDERR;
-  my $A = prompt "\nWas the text displayed directly on screen? [Yn]";
+  my $A = prompt("\nWas the text displayed directly on screen? [Yn]");
   ok is_yes($A), 'Diagnostic';
 
   {
@@ -36,7 +37,7 @@ SKIP: {
     close BOB;
   }
 
-  $A = prompt "\nWas the text displayed in a pager? [Yn]";
+  $A = prompt("\nWas the text displayed in a pager? [Yn]");
   ok is_yes($A), 'Unbuffered glob filehandle';
 }
 

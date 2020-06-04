@@ -1,8 +1,9 @@
 use strict;
 use warnings;
 use File::Temp;
-use Test::More;
-use t::TestUtils;
+use Test::More 0.88;
+require './t/TestUtils.pm';
+t::TestUtils->import();
 
 use 5.6.0;
 use utf8;
@@ -26,7 +27,7 @@ SKIP: {
   binmode(*BOB, ':encoding(UTF-8)');
   select(BOB);
 
-  my $A = prompt "\nDid you see 'Bonzai Bjørn' in your pager? Note the crossed o in the second word [Yn]";
+  my $A = prompt("\nDid you see 'Bonzai Bjørn' in your pager? Note the crossed o in the second word [Yn]");
   ok is_yes($A), 'layer preservation';
 
 }

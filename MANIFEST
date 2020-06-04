@@ -5,11 +5,13 @@ lib/IO/Pager.pm
 lib/IO/Pager/Buffered.pm
 lib/IO/Pager/Page.pm
 lib/IO/Pager/Unbuffered.pm
+lib/IO/Pager/less.pm
+lib/IO/Pager/Perl.pm
+lib/IO/Pager/tp
 README
 TODO
 .proverc
-.travis.yml
-t.pl
+test.pl
 t/01-load.t
 t/02-which.t
 t/02-which_interactive.t
@@ -26,4 +28,9 @@ t/11-redirect-oo.pl
 t/11-redirect-oo.t
 t/12-preservelayers_interactive.t
 t/13-eof_interactive.t
+t/14-tee_interactive.t
+t/15-log_interactive.t
+t/16-PurePerl_interactive.t
 t/TestUtils.pm
+META.yml                                 Module YAML meta-data (added by MakeMaker)
+META.json                                Module JSON meta-data (added by MakeMaker)
