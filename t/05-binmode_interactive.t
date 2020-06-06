@@ -1,7 +1,8 @@
 use strict;
 use warnings;
-use Test::More;
-use t::TestUtils;
+use Test::More 0.88;
+require './t/TestUtils.pm';
+t::TestUtils->import();
 
 # Test paging binary content
 
@@ -30,7 +31,7 @@ SKIP: {
   is $warnings, undef, 'No wide character warnings';
 
   binmode STDOUT, ":utf8";
-  my $A = prompt "\nWere Unicode characters like \x{17D} and \x{A9},\nor perhaps a bytecode placeholder such as <U+1F42A> displayed in the pager? [Yn]";
+  my $A = prompt("\nWere Unicode characters like \x{17D} and \x{A9},\nor perhaps a bytecode placeholder such as <U+1F42A> displayed in the pager? [Yn]");
   ok is_yes($A), 'Binmode layer selection / pager Unicode support';
 }
 

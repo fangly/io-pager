@@ -1,7 +1,8 @@
 use strict;
 use warnings;
-use Test::More;
-use t::TestUtils;
+use Test::More 0.88;
+require './t/TestUtils.pm';
+t::TestUtils->import();
 use IO::Pager;
 
 SKIP: {
@@ -10,7 +11,7 @@ SKIP: {
   my $A;
 
   PAUSE: {
-    my $token = new IO::Pager undef, 'Buffered';
+    my $token = new IO::Pager local *RIBBIT, 'Buffered';
     isa_ok $token, 'IO::Pager::Buffered';
 
     my $PID = $token->PID;
@@ -19,7 +20,7 @@ SKIP: {
     is $PID, $token->{child}, "PID($PID)";
     sleep 1;
   }
-  $A = prompt "\nWas there a pause before the text appeared? [Ynr] (r-epeat)";
+  $A = prompt("\nWas there a pause before the text appeared? [Ynr] (r-epeat)");
   goto PAUSE if $A eq 'r';
   ok is_yes($A), 'Implicit close of buffered OO filehandle';
 
@@ -29,7 +30,7 @@ SKIP: {
     print RIBBIT "No toad sexing allowed";
     print RIBBIT "\nEnd of text, try pressing 'Q' to exit.\n"
   }
-  $A = prompt "\nIs toad sexing allowed? (And posted before commentary on trains) [yN]";
+  $A = prompt("\nIs toad sexing allowed? (And posted before commentary on trains) [yN]");
   goto PAUSE if $A eq 'r';
   ok is_no($A), 'Implicit close of buffered glob filehandle';
 

@@ -1,8 +1,9 @@
 use strict;
 use warnings;
 use File::Spec;
-use Test::More;
-use t::TestUtils;
+use Test::More 0.88;
+require './t/TestUtils.pm';
+t::TestUtils->import();
 no warnings; $^W = 0; #Avoid: Can't exec "/dev/null": Permission denied
 
 use IO::Pager;
